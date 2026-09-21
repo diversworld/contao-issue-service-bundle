@@ -1,0 +1,5 @@
+<?php
+declare(strict_types=1);
+namespace Vendor\ContaoIssueServiceBundle\Application;
+use Doctrine\DBAL\Connection;
+final class RetentionService { public function __construct(private readonly Connection $db,private readonly SettingsService $settings){} public function preview():array{$p=$this->settings->json('retention_policy',['closed_days'=>730]);$cut=(new \DateTimeImmutable('-'.(int)($p['closed_days']??730).' days'))->format('Y-m-d H:i:s');return ['cutoff'=>$cut,'issues'=>(int)$this->db->fetchOne('SELECT COUNT(*) FROM tl_issue WHERE closed_at IS NOT NULL AND closed_at<:c AND deleted_at IS NULL',['c'=>$cut])];} public function execute(bool $dryRun=true):array{$x=$this->preview();if(!$dryRun)$this->db->executeStatement("UPDATE tl_issue SET member_id=NULL,guest_access_hash=NULL,title='[anonymized]',description='[anonymized]',resolution=NULL,deleted_at=NOW() WHERE closed_at IS NOT NULL AND closed_at<:c AND deleted_at IS NULL",['c'=>$x['cutoff']]);return $x+['dryRun'=>$dryRun];} }

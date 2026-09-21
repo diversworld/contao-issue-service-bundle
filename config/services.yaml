@@ -1,0 +1,27 @@
+parameters:
+  contao_issue_service.storage_dir: '%kernel.project_dir%/var/issue-attachments'
+  contao_issue_service.mail_from: 'no-reply@example.invalid'
+
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  Vendor\ContaoIssueServiceBundle\:
+    resource: '../src/'
+    exclude:
+      - '../src/ContaoManager/'
+      - '../src/ContaoIssueServiceBundle.php'
+      - '../src/Domain/Dto/'
+      - '../src/Domain/Enum/'
+
+  Vendor\ContaoIssueServiceBundle\Infrastructure\LocalAttachmentStorage:
+    arguments:
+      $storageDir: '%contao_issue_service.storage_dir%'
+
+  Vendor\ContaoIssueServiceBundle\Infrastructure\AttachmentStorageInterface:
+    alias: Vendor\ContaoIssueServiceBundle\Infrastructure\LocalAttachmentStorage
+
+  Vendor\ContaoIssueServiceBundle\Application\NotificationService:
+    arguments:
+      $fromAddress: '%contao_issue_service.mail_from%'

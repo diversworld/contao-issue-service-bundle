@@ -1,0 +1,5 @@
+<?php
+declare(strict_types=1);
+namespace Vendor\ContaoIssueServiceBundle\Controller\Frontend;
+use Contao\FrontendUser;use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;use Symfony\Component\HttpFoundation\Request;use Symfony\Component\HttpFoundation\Response;use Symfony\Component\Routing\Attribute\Route;use Vendor\ContaoIssueServiceBundle\Domain\Dto\IssueListFilter;use Vendor\ContaoIssueServiceBundle\Repository\IssueRepository;
+#[Route('/service/issues',name:'issue_service_list',methods:['GET'])] final class IssueListController extends AbstractController { public function __invoke(Request $r,IssueRepository $repo):Response{$u=$this->getUser();if(!$u instanceof FrontendUser)throw $this->createAccessDeniedException();$items=$repo->list(new IssueListFilter(memberId:(int)$u->id,serviceId:$r->query->getInt('service')?:null,statusId:$r->query->getInt('status')?:null,page:max(1,$r->query->getInt('page',1))));return $this->render('@ContaoIssueService/issue/list.html.twig',['issues'=>$items]);} }

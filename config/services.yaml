@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 parameters:
   contao_issue_service.storage_dir: '%kernel.project_dir%/var/issue-attachments'
   contao_issue_service.mail_from: 'no-reply@example.invalid'
@@ -25,3 +26,10 @@ services:
   Vendor\ContaoIssueServiceBundle\Application\NotificationService:
     arguments:
       $fromAddress: '%contao_issue_service.mail_from%'
+=======
+services:
+  _defaults: { autowire: true, autoconfigure: true }
+  Vendor\ContaoIssueServiceBundle\:
+    resource: '../src/'
+    exclude: ['../src/ContaoManager/', '../src/ContaoIssueServiceBundle.php', '../src/Domain/Dto/', '../src/Domain/Enum/']
+>>>>>>> 0058e26 (Erster Commit)

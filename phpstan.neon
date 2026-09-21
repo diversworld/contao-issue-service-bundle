@@ -1,4 +1,9 @@
 parameters:
   level: 8
+<<<<<<< HEAD
   paths:
     - src
+=======
+  paths: [src, tests]
+  treatPhpDocTypesAsCertain: false
+>>>>>>> 0058e26 (Erster Commit)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Contao Issue & Service Management Bundle
 
 Implementierungsstand für Contao 5.7 und Contao 6 auf Basis des Pflichtenhefts.
@@ -26,3 +27,16 @@ Danach müssen im Backend die Pflichtwerte unter Service Management / Einstellun
 ## Wichtige Hinweise
 
 Der Paketname `vendor/...`, Absenderadressen und organisationsspezifische Werte sind vor Veröffentlichung anzupassen. Composer-Auflösung, Functional Tests und Migrationen müssen im konkreten Contao-5.7- und Contao-6-Zielprojekt ausgeführt werden. Die lokale Erstellung dieses Pakets prüft PHP-Syntax und Archivintegrität, ersetzt aber keinen Lauf in einer echten Contao-Installation.
+=======
+# Contao Issue Service Bundle - Test- und Kompatibilitätspaket
+
+Dieses Paket ergänzt automatisierte Unit- und Strukturtests sowie eine dokumentierte Kompatibilitätsprüfung für Contao 5.7 und Contao 6.
+
+```bash
+composer update
+composer check
+php vendor/bin/contao-console contao:migrate --no-interaction
+```
+
+Siehe `docs/TESTPLAN.md`, `docs/COMPATIBILITY_AUDIT.md` und `docs/REMAINING_INTEGRATION_STEPS.md`.
+>>>>>>> 0058e26 (Erster Commit)

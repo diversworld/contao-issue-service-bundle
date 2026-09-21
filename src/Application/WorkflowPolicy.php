@@ -1,0 +1,3 @@
+<?php
+declare(strict_types=1); namespace Vendor\ContaoIssueServiceBundle\Application; use Vendor\ContaoIssueServiceBundle\Domain\Enum\IssueStatus;
+final class WorkflowPolicy { private const MAP=['new'=>['triage'],'triage'=>['in_progress','waiting_user','rejected'],'in_progress'=>['waiting_user','resolved'],'waiting_user'=>['in_progress','closed'],'resolved'=>['closed','in_progress'],'closed'=>['in_progress'],'rejected'=>['triage']]; public function allows(IssueStatus $from,IssueStatus $to):bool{return in_array($to->value,self::MAP[$from->value]??[],true);} public function assertAllowed(IssueStatus $from,IssueStatus $to):void{if(!$this->allows($from,$to))throw new \DomainException('Transition not allowed.');} }

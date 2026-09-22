@@ -26,7 +26,7 @@ Danach müssen im Backend die Pflichtwerte unter Service Management / Einstellun
 
 ## Wichtige Hinweise
 
-Der Paketname `vendor/...`, Absenderadressen und organisationsspezifische Werte sind vor Veröffentlichung anzupassen. Composer-Auflösung, Functional Tests und Migrationen müssen im konkreten Contao-5.7- und Contao-6-Zielprojekt ausgeführt werden. Die lokale Erstellung dieses Pakets prüft PHP-Syntax und Archivintegrität, ersetzt aber keinen Lauf in einer echten Contao-Installation.
+- Der Paketname `vendor/...`, Absenderadressen und organisationsspezifische Werte sind vor Veröffentlichung anzupassen. Composer-Auflösung, Functional Tests und Migrationen müssen im konkreten Contao-5.7- und Contao-6-Zielprojekt ausgeführt werden. Die lokale Erstellung dieses Pakets prüft PHP-Syntax und Archivintegrität, ersetzt aber keinen Lauf in einer echten Contao-Installation.
 =======
 # Contao Issue Service Bundle - Test- und Kompatibilitätspaket
 

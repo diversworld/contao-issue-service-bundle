@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Contao Issue & Service Management Bundle
 
 Implementierungsstand für Contao 5.7 und Contao 6 auf Basis des Pflichtenhefts.
@@ -30,7 +29,7 @@ Danach müssen im Backend die Pflichtwerte unter Service Management / Einstellun
 =======
 # Contao Issue Service Bundle - Test- und Kompatibilitätspaket
 
-Dieses Paket ergänzt automatisierte Unit- und Strukturtests sowie eine dokumentierte Kompatibilitätsprüfung für Contao 5.7 und Contao 6.
+## Prüfung
 
 ```bash
 composer update
@@ -39,4 +38,3 @@ php vendor/bin/contao-console contao:migrate --no-interaction
 ```
 
 Siehe `docs/TESTPLAN.md`, `docs/COMPATIBILITY_AUDIT.md` und `docs/REMAINING_INTEGRATION_STEPS.md`.
->>>>>>> 0058e26 (Erster Commit)

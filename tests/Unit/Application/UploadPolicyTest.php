@@ -1,1 +1,34 @@
-<?php declare(strict_types=1); namespace Vendor\ContaoIssueServiceBundle\Tests\Unit\Application; use PHPUnit\Framework\TestCase; use Vendor\ContaoIssueServiceBundle\Application\UploadPolicy; final class UploadPolicyTest extends TestCase { public function testAllowsValidFile():void{(new UploadPolicy())->assertAllowed('PDF',100,0,['pdf'],1000,2);self::addToAssertionCount(1);} public function testRejectsExtension():void{$this->expectException(\InvalidArgumentException::class);(new UploadPolicy())->assertAllowed('php',100,0,['pdf'],1000,2);} public function testRejectsSize():void{$this->expectException(\InvalidArgumentException::class);(new UploadPolicy())->assertAllowed('pdf',1001,0,['pdf'],1000,2);} public function testRejectsCount():void{$this->expectException(\InvalidArgumentException::class);(new UploadPolicy())->assertAllowed('pdf',100,2,['pdf'],1000,2);} }
+<?php 
+
+declare(strict_types=1); 
+
+namespace Diversworld\ContaoIssueServiceBundle\Tests\Unit\Application; 
+use PHPUnit\Framework\TestCase; 
+use Diversworld\ContaoIssueServiceBundle\Application\UploadPolicy; 
+
+final class UploadPolicyTest extends TestCase 
+{ 
+    public function testAllowsValidFile():void
+    {
+        (new UploadPolicy())->assertAllowed('PDF',100,0,['pdf'],1000,2);
+        self::addToAssertionCount(1);
+    }
+
+    public function testRejectsExtension():void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        (new UploadPolicy())->assertAllowed('php',100,0,['pdf'],1000,2);
+    }
+
+    public function testRejectsSize():void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        (new UploadPolicy())->assertAllowed('pdf',1001,0,['pdf'],1000,2);
+    }
+
+    public function testRejectsCount():void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        (new UploadPolicy())->assertAllowed('pdf',100,2,['pdf'],1000,2);
+    }
+}

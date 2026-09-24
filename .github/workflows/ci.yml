@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-name: CI
-=======
 name: Compatibility CI
->>>>>>> 0058e26 (Erster Commit)
 on: [push, pull_request]
 jobs:
   test:
@@ -10,31 +6,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-<<<<<<< HEAD
-        contao: ['^5.7','^6.0']
-        php: ['8.2','8.3']
-=======
         include:
           - {contao: '^5.7', php: '8.2', dependencies: lowest}
           - {contao: '^5.7', php: '8.3', dependencies: highest}
           - {contao: '^6.0', php: '8.3', dependencies: lowest}
           - {contao: '^6.0', php: '8.4', dependencies: highest}
->>>>>>> 0058e26 (Erster Commit)
     steps:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with: {php-version: '${{ matrix.php }}', coverage: none}
       - run: composer require --no-update contao/core-bundle:${{ matrix.contao }}
-<<<<<<< HEAD
-      - run: composer update --prefer-dist --no-interaction
-      - run: find src contao tests -name '*.php' -print0 | xargs -0 -n1 php -l
-      - run: vendor/bin/phpunit
-      - run: vendor/bin/phpstan analyse
-=======
       - run: composer update --prefer-dist --no-interaction ${{ matrix.dependencies == 'lowest' && '--prefer-lowest' || '' }}
       - run: find src contao tests -name '*.php' -print0 | xargs -0 -n1 php -l
       - run: composer test
       - run: composer analyse
-      - run: php vendor/bin/contao-console debug:router | grep issue-service
-      - run: php vendor/bin/contao-console contao:migrate --no-interaction
->>>>>>> 0058e26 (Erster Commit)

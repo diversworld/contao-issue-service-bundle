@@ -1,1 +1,25 @@
-<?php declare(strict_types=1); namespace Vendor\ContaoIssueServiceBundle\Tests\Unit\Security; use PHPUnit\Framework\TestCase; use Vendor\ContaoIssueServiceBundle\Security\OwnershipPolicy; final class OwnershipPolicyTest extends TestCase { public function testMemberOwnership():void{$p=new OwnershipPolicy();self::assertTrue($p->mayAccess(7,7,null,null));self::assertFalse($p->mayAccess(7,8,null,null));} public function testGuestTokenHash():void{$p=new OwnershipPolicy();self::assertTrue($p->mayAccess(null,null,hash('sha256','secret'),'secret'));self::assertFalse($p->mayAccess(null,null,hash('sha256','secret'),'wrong'));} }
+<?php 
+
+declare(strict_types=1); 
+
+namespace Diversworld\ContaoIssueServiceBundle\Tests\Unit\Security;
+
+use PHPUnit\Framework\TestCase;
+use Diversworld\ContaoIssueServiceBundle\Security\OwnershipPolicy;
+
+final class OwnershipPolicyTest extends TestCase
+{
+    public function testMemberOwnership(): void
+    {
+        $p = new OwnershipPolicy();
+        self::assertTrue($p->mayAccess(7, 7, null, null));
+        self::assertFalse($p->mayAccess(7, 8, null, null));
+    }
+
+    public function testGuestTokenHash(): void
+    {
+        $p = new OwnershipPolicy();
+        self::assertTrue($p->mayAccess(null, null, hash('sha256', 'secret'), 'secret'));
+        self::assertFalse($p->mayAccess(null, null, hash('sha256', 'secret'), 'wrong'));
+    }
+}

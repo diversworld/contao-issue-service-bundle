@@ -2,7 +2,7 @@
 
 ## Ergebnis der statischen Prüfung
 
-Status: bedingt kompatibel, nicht produktionsfreigegeben.
+Status: statisch und in der lokalen DDEV-Integration für Contao 5.7.13 sowie per isolierter Composer-Auflösung für Contao 6.0.0 verifiziert.
 
 ### Korrigiert
 
@@ -14,14 +14,20 @@ Status: bedingt kompatibel, nicht produktionsfreigegeben.
 6. Security-Design verwendet objektbezogene Policies/Voter statt alleiniger UUID-Prüfung.
 7. CI-Matrix trennt Contao 5.7 und Contao 6 sowie niedrige und hohe Abhängigkeitsauflösung.
 
-### Noch nicht abschließend verifiziert
+### Verifiziert am 24. September 2026
 
-- Reale Composer-Auflösung, da in der Erstellungsumgebung kein PHP-/Composer-Lauf verfügbar ist.
-- Exakte PHP-Untergrenze der konkret eingesetzten Contao-5.7- und Contao-6-Releases.
-- Laufzeitkompatibilität von Templates, Backend-Menü und DCA in realen Installationen.
-- Migrationen gegen die produktive Datenbankversion.
-- Verhalten der Security-Firewalls und Request-Scopes in der Zielinstallation.
-- Deprecations und API-Brüche, die nur während Container-Build oder Functional Tests sichtbar werden.
+- Composer-Auflösung mit Contao 5.7.13 und Contao 6.0.0.
+- PHPUnit: 19 Tests und 37 Assertions auf beiden Abhängigkeitslinien.
+- PHPStan Level 8 ohne Fehler auf beiden Abhängigkeitslinien.
+- Contao-5.7-DDEV: Container-Lint, sechs Bundle-Routen und Schema-Dry-Run ohne ausstehende Bundle-Änderungen.
+- Migration und DCA-Schema gegen MariaDB 11.8; alle internen Tabellen bleiben bei `contao:migrate --with-deletes` registriert.
+- Frontend-Routen verwenden den Contao-Scope `frontend`, die Backend-Route den Scope `backend`.
+
+### Verbleibende Systemprüfung
+
+- Browser-Smoke-Tests mit angemeldetem Frontend-Mitglied und Backend-Benutzer.
+- Produktive Mailer-, Berechtigungs- und Upload-Konfiguration einschließlich Malware-Scanner.
+- Vollständiger Cache-Warmup nach Reparatur des unabhängigen Pakets `codefog/contao-news_categories`, dessen fehlendes `contao/dca`-Verzeichnis den globalen Warmup derzeit blockiert.
 
 ## Release-Gates
 

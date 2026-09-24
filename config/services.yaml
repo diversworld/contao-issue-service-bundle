@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 parameters:
   contao_issue_service.storage_dir: '%kernel.project_dir%/var/issue-attachments'
   contao_issue_service.mail_from: 'no-reply@example.invalid'
@@ -8,28 +7,22 @@ services:
     autowire: true
     autoconfigure: true
 
-  Vendor\ContaoIssueServiceBundle\:
+  Diversworld\ContaoIssueServiceBundle\:
     resource: '../src/'
     exclude:
       - '../src/ContaoManager/'
       - '../src/ContaoIssueServiceBundle.php'
+      - '../src/DependencyInjection/'
       - '../src/Domain/Dto/'
       - '../src/Domain/Enum/'
 
-  Vendor\ContaoIssueServiceBundle\Infrastructure\LocalAttachmentStorage:
+  Diversworld\ContaoIssueServiceBundle\Infrastructure\LocalAttachmentStorage:
     arguments:
       $storageDir: '%contao_issue_service.storage_dir%'
 
-  Vendor\ContaoIssueServiceBundle\Infrastructure\AttachmentStorageInterface:
-    alias: Vendor\ContaoIssueServiceBundle\Infrastructure\LocalAttachmentStorage
+  Diversworld\ContaoIssueServiceBundle\Infrastructure\AttachmentStorageInterface:
+    alias: Diversworld\ContaoIssueServiceBundle\Infrastructure\LocalAttachmentStorage
 
-  Vendor\ContaoIssueServiceBundle\Application\NotificationService:
+  Diversworld\ContaoIssueServiceBundle\Application\NotificationService:
     arguments:
       $fromAddress: '%contao_issue_service.mail_from%'
-=======
-services:
-  _defaults: { autowire: true, autoconfigure: true }
-  Vendor\ContaoIssueServiceBundle\:
-    resource: '../src/'
-    exclude: ['../src/ContaoManager/', '../src/ContaoIssueServiceBundle.php', '../src/Domain/Dto/', '../src/Domain/Enum/']
->>>>>>> 0058e26 (Erster Commit)

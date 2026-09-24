@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-namespace Vendor\ContaoIssueServiceBundle\Application;
+namespace Diversworld\ContaoIssueServiceBundle\Application;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;

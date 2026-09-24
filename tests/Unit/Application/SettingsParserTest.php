@@ -1,1 +1,21 @@
-<?php declare(strict_types=1); namespace Vendor\ContaoIssueServiceBundle\Tests\Unit\Application; use PHPUnit\Framework\TestCase; use Vendor\ContaoIssueServiceBundle\Application\SettingsParser; final class SettingsParserTest extends TestCase { public function testTypedValues():void{$p=new SettingsParser();self::assertTrue($p->bool('1'));self::assertFalse($p->bool('false'));self::assertSame(10,$p->positiveInt('10',1));self::assertSame(5,$p->positiveInt('-1',5));self::assertSame(['pdf','png'],$p->jsonArray('["pdf","png"]'));self::assertSame(['x'],$p->jsonArray('{bad',['x']));} }
+<?php 
+
+declare(strict_types=1); 
+
+namespace Diversworld\ContaoIssueServiceBundle\Tests\Unit\Application; 
+use PHPUnit\Framework\TestCase; 
+use Diversworld\ContaoIssueServiceBundle\Application\SettingsParser; 
+
+final class SettingsParserTest extends TestCase 
+{ 
+    public function testTypedValues():void
+    {
+        $p=new SettingsParser();
+        self::assertTrue($p->bool('1'));
+        self::assertFalse($p->bool('false'));
+        self::assertSame(10,$p->positiveInt('10',1));
+        self::assertSame(5,$p->positiveInt('-1',5));
+        self::assertSame(['pdf','png'],$p->jsonArray('["pdf","png"]'));
+        self::assertSame(['x'],$p->jsonArray('{bad',['x']));
+    }
+}

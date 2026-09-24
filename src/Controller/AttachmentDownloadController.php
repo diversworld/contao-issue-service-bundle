@@ -1,5 +1,41 @@
 <?php
+
 declare(strict_types=1);
-namespace Vendor\ContaoIssueServiceBundle\Controller;
-use Doctrine\DBAL\Connection;use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;use Symfony\Component\HttpFoundation\BinaryFileResponse;use Symfony\Component\HttpFoundation\ResponseHeaderBag;use Symfony\Component\Routing\Attribute\Route;use Vendor\ContaoIssueServiceBundle\Application\AttachmentService;use Vendor\ContaoIssueServiceBundle\Security\AttachmentVoter;
-#[Route('/service/issues/{uuid}/attachment/{id}',name:'issue_service_attachment',methods:['GET'])] final class AttachmentDownloadController extends AbstractController { public function __invoke(string $uuid,int $id,Connection $db,AttachmentService $files):BinaryFileResponse{$row=$db->fetchAssociative("SELECT a.*,i.member_id FROM tl_issue_attachment a JOIN tl_issue i ON i.id=a.issue_id WHERE a.id=:id AND HEX(i.uuid)=REPLACE(UPPER(:uuid),'-','')",['id'=>$id,'uuid'=>$uuid]);if(false===$row)throw $this->createNotFoundException();$this->denyAccessUnlessGranted(AttachmentVoter::DOWNLOAD,$row);$r=new BinaryFileResponse($files->path($row['storage_key']));$r->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT,$row['original_name']);$r->headers->set('Content-Type','application/octet-stream');$r->headers->set('X-Content-Type-Options','nosniff');return $r;} }
+
+namespace Diversworld\ContaoIssueServiceBundle\Controller;
+
+use Doctrine\DBAL\Connection;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\Routing\Attribute\Route;
+use Diversworld\ContaoIssueServiceBundle\Application\AttachmentService;
+use Diversworld\ContaoIssueServiceBundle\Security\AttachmentVoter;
+
+#[Route('/service/issues/{uuid}/attachment/{id}',name:'issue_service_attachment',defaults:['_scope'=>'frontend'],methods:['GET'])] 
+final class AttachmentDownloadController extends AbstractController 
+{ 
+    public function __invoke(string $uuid,int $id,Connection $db,AttachmentService $files):BinaryFileResponse
+    {
+        $row=$db->fetchAssociative(
+            "SELECT a.*,i.member_id 
+            FROM tl_issue_attachment a 
+            JOIN tl_issue i ON i.id=a.issue_id 
+            WHERE a.id=:id AND HEX(i.uuid)=REPLACE(UPPER(:uuid),'-','')",
+            ['id'=>$id,'uuid'=>$uuid]
+        );
+        
+        if(false===$row)
+            throw $this->createNotFoundException();
+        
+        $this->denyAccessUnlessGranted(AttachmentVoter::DOWNLOAD,$row);
+        
+        $r=new BinaryFileResponse($files->path($row['storage_key']));
+        
+        $r->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT,$row['original_name']);
+        $r->headers->set('Content-Type','application/octet-stream');
+        $r->headers->set('X-Content-Type-Options','nosniff');
+        
+        return $r;
+    } 
+}

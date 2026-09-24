@@ -16,14 +16,20 @@
   "conflict": {"contao/manager-plugin": "<2.0 || >=3.0"},
   "require-dev": {
     "contao/manager-plugin": "^2.0",
-    "contao/test-case": "^5.0",
-    "phpunit/phpunit": "^10.5 || ^11.0",
+    "phpunit/phpunit": "^10.5 || ^11.0 || ^12.4",
     "phpstan/phpstan": "^1.12 || ^2.0",
     "phpstan/phpstan-phpunit": "^1.4 || ^2.0"
   },
-  "autoload": {"psr-4": {"Vendor\\ContaoIssueServiceBundle\\": "src/"}},
-  "autoload-dev": {"psr-4": {"Vendor\\ContaoIssueServiceBundle\\Tests\\": "tests/"}},
-  "extra": {"contao-manager-plugin": "Vendor\\ContaoIssueServiceBundle\\ContaoManager\\Plugin"},
+  "autoload": {"psr-4": {"Diversworld\\ContaoIssueServiceBundle\\": "src/"}},
+  "autoload-dev": {"psr-4": {"Diversworld\\ContaoIssueServiceBundle\\Tests\\": "tests/"}},
+  "extra": {"contao-manager-plugin": "Diversworld\\ContaoIssueServiceBundle\\ContaoManager\\Plugin"},
+  "config": {
+    "allow-plugins": {
+      "contao-components/installer": true,
+      "contao/manager-plugin": true,
+      "php-http/discovery": false
+    }
+  },
   "scripts": {
     "test": "phpunit",
     "analyse": "phpstan analyse",

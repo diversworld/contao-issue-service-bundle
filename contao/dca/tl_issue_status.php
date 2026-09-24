@@ -1,4 +1,24 @@
 <?php
+
 declare(strict_types=1);
+
+use Contao\DataContainer;
 use Contao\DC_Table;
-$GLOBALS['TL_DCA']['tl_issue_status']=['config'=>['dataContainer'=>DC_Table::class,'enableVersioning'=>true,'sql'=>['keys'=>['id'=>'primary']]],'list'=>['sorting'=>['mode'=>1,'fields'=>['id'],'flag'=>1],'label'=>['fields'=>['id'],'format'=>'%s'],'operations'=>['edit'=>['href'=>'act=edit','icon'=>'edit.svg'],'delete'=>['href'=>'act=delete','icon'=>'delete.svg'],'show'=>['href'=>'act=show','icon'=>'show.svg']]],'palettes'=>['default'=>'{title_legend},status_key,title,sort_order,is_initial,is_resolved,is_closed,published'],'fields'=>['id'=>['sql'=>"int(10) unsigned NOT NULL auto_increment"],'tstamp'=>['sql'=>"int(10) unsigned NOT NULL default 0"],'status_key'=>['inputType'=>'text','eval'=>['mandatory'=>true],'sql'=>"varchar(160) NOT NULL default ''"],'title'=>['inputType'=>'text','eval'=>['mandatory'=>true],'sql'=>"varchar(160) NOT NULL default ''"],'sort_order'=>['inputType'=>'text','eval'=>['mandatory'=>true],'sql'=>"varchar(160) NOT NULL default ''"],'is_initial'=>['inputType'=>'checkbox','eval'=>['mandatory'=>false],'sql'=>"char(1) NOT NULL default ''"],'is_resolved'=>['inputType'=>'checkbox','eval'=>['mandatory'=>false],'sql'=>"char(1) NOT NULL default ''"],'is_closed'=>['inputType'=>'checkbox','eval'=>['mandatory'=>false],'sql'=>"char(1) NOT NULL default ''"],'published'=>['inputType'=>'checkbox','eval'=>['mandatory'=>false],'sql'=>"char(1) NOT NULL default ''"]]];
+
+$GLOBALS['TL_DCA']['tl_issue_status'] = [
+	'config' => ['dataContainer' => DC_Table::class, 'enableVersioning' => true, 'sql' => ['keys' => ['id' => 'primary', 'status_key' => 'unique']]],
+	'list' => ['sorting' => ['mode' => DataContainer::MODE_SORTED, 'fields' => ['sort_order'], 'flag' => DataContainer::SORT_ASC], 'label' => ['fields' => ['title', 'status_key'], 'format' => '%s [%s]'], 'operations' => ['edit' => ['href' => 'act=edit', 'icon' => 'edit.svg'], 'delete' => ['href' => 'act=delete', 'icon' => 'delete.svg'], 'show' => ['href' => 'act=show', 'icon' => 'show.svg']]],
+	'palettes' => ['default' => '{title_legend},status_key,title,sort_order,color;{state_legend},is_initial,is_resolved,is_closed,published'],
+	'fields' => [
+		'id' => ['sql' => 'int unsigned NOT NULL auto_increment'],
+		'tstamp' => ['sql' => "int unsigned NOT NULL default 0"],
+		'status_key' => ['inputType' => 'text', 'eval' => ['mandatory' => true, 'maxlength' => 32, 'rgxp' => 'alias'], 'search' => true, 'sql' => "varchar(32) NOT NULL default ''"],
+		'title' => ['inputType' => 'text', 'eval' => ['mandatory' => true, 'maxlength' => 100], 'search' => true, 'sql' => "varchar(100) NOT NULL default ''"],
+		'sort_order' => ['inputType' => 'text', 'eval' => ['mandatory' => true, 'rgxp' => 'natural'], 'sql' => "smallint unsigned NOT NULL default 0"],
+		'is_initial' => ['inputType' => 'checkbox', 'sql' => "tinyint(1) NOT NULL default 0"],
+		'is_resolved' => ['inputType' => 'checkbox', 'sql' => "tinyint(1) NOT NULL default 0"],
+		'is_closed' => ['inputType' => 'checkbox', 'sql' => "tinyint(1) NOT NULL default 0"],
+		'color' => ['inputType' => 'text', 'eval' => ['maxlength' => 7, 'rgxp' => 'color'], 'sql' => 'varchar(7) NULL'],
+		'published' => ['inputType' => 'checkbox', 'toggle' => true, 'filter' => true, 'sql' => "tinyint(1) NOT NULL default 1"],
+	],
+];

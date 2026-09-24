@@ -22,22 +22,22 @@ $GLOBALS['BE_MOD']['issue_service_management'] = [
         'callback' => IssueDashboardModule::class,
     ],
 
-    'issues' => [
+    'issue_service_issues' => [
         'tables'=>[
             'tl_issue','tl_issue_comment','tl_issue_attachment'
         ]
     ],
-    'services' => [
+    'issue_service_services' => [
         'tables'=>[
             'tl_issue_service','tl_issue_category'
         ]
     ],
-    'workflow' => [
+    'issue_service_workflow' => [
         'tables'=>[
             'tl_issue_status','tl_issue_transition'
         ]
     ],
-    'settings' => [
+    'issue_service_settings' => [
         'tables'=>[
             'tl_issue_settings'
         ]

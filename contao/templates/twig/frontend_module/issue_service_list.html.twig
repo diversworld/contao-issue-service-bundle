@@ -1,0 +1,34 @@
+{% extends "@Contao/frontend_module/_base.html.twig" %}
+
+{% block content %}
+    <div class="issue-service issue-service-list">
+        {% if loginRequired %}
+            <p class="empty">{{ loginRequiredMessage }}</p>
+        {% elseif issues is empty %}
+            <p class="empty">{{ emptyMessage }}</p>
+        {% else %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ticket</th>
+                        <th>Titel</th>
+                        <th>Service</th>
+                        <th>Status</th>
+                        <th>Aktualisiert</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for issue in issues %}
+                        <tr>
+                            <td><a href="{{ issue.detail_url }}">{{ issue.ticket_number }}</a></td>
+                            <td>{{ issue.title }}</td>
+                            <td>{{ issue.service_title }}</td>
+                            <td>{{ issue.status_title }}</td>
+                            <td>{{ issue.last_public_activity_at }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+{% endblock %}

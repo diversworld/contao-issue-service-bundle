@@ -4,34 +4,50 @@ declare(strict_types=1);
 
 namespace Diversworld\ContaoIssueServiceBundle\FrontendModule;
 
+use Contao\CoreBundle\Controller\FrontendModule\AbstractFrontendModuleController;
+use Contao\CoreBundle\DependencyInjection\Attribute\AsFrontendModule;
+use Contao\CoreBundle\Routing\ContentUrlGenerator;
+use Contao\CoreBundle\Twig\FragmentTemplate;
 use Contao\FrontendUser;
-use Contao\Module;
-use Contao\StringUtil;
-use Contao\System;
+use Contao\ModuleModel;
+use Contao\PageModel;
 use Doctrine\DBAL\Connection;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-final class IssueListModule extends Module
+#[AsFrontendModule(IssueListModule::TYPE, category: 'issue_service', template: 'frontend_module/issue_service_list')]
+final class IssueListModule extends AbstractFrontendModuleController
 {
+    use IssueFrontendModuleTemplateTrait;
+
+    public const TYPE = 'issue_service_list';
+
     private const UUID_SQL = "LOWER(CONCAT(SUBSTR(HEX(i.uuid),1,8),'-',SUBSTR(HEX(i.uuid),9,4),'-',SUBSTR(HEX(i.uuid),13,4),'-',SUBSTR(HEX(i.uuid),17,4),'-',SUBSTR(HEX(i.uuid),21)))";
 
-    protected function compile(): void
-    {
+    public function __construct(
+        private readonly Connection $connection,
+        private readonly ContentUrlGenerator $contentUrlGenerator,
+        private readonly UrlGeneratorInterface $urlGenerator,
+    ) {
     }
 
-    public function generate(): string
+    protected function getResponse(FragmentTemplate $template, ModuleModel $model, Request $request): Response
     {
+        $this->setModuleTemplateDefaults($template, $model);
+
         $user = FrontendUser::getInstance();
 
+        $template->set('loginRequired', !$user->id);
+        $template->set('loginRequiredMessage', $GLOBALS['TL_LANG']['MSC']['issue_service_login_required'] ?? 'Bitte melden Sie sich an, um Ihre Issues zu sehen.');
+        $template->set('emptyMessage', $GLOBALS['TL_LANG']['MSC']['issue_service_no_issues'] ?? 'Es sind keine Issues vorhanden.');
+        $template->set('issues', []);
+
         if (!$user->id) {
-            return '<div class="mod_issue_service_list"><p class="empty">'.StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['issue_service_login_required'] ?? 'Bitte melden Sie sich an, um Ihre Issues zu sehen.').'</p></div>';
+            return $template->getResponse();
         }
 
-        $container = System::getContainer();
-        $connection = $container->get('database_connection');
-        \assert($connection instanceof Connection);
-        $router = $container->get('router');
-
-        $issues = $connection->fetchAllAssociative(
+        $issues = $this->connection->fetchAllAssociative(
             'SELECT i.ticket_number, i.title, i.last_public_activity_at, '.self::UUID_SQL.' uuid, s.title service_title, st.title status_title
              FROM tl_issue i
              JOIN tl_issue_service s ON s.id = i.service_id
@@ -42,24 +58,25 @@ final class IssueListModule extends Module
             ['member' => (int) $user->id],
         );
 
-        if ([] === $issues) {
-            return '<div class="mod_issue_service_list"><p class="empty">'.StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['issue_service_no_issues'] ?? 'Es sind keine Issues vorhanden.').'</p></div>';
+        foreach ($issues as &$issue) {
+            $issue['detail_url'] = $this->generateDetailUrl((string) $issue['uuid'], $model);
+        }
+        unset($issue);
+
+        $template->set('issues', $issues);
+
+        return $template->getResponse();
+    }
+
+    private function generateDetailUrl(string $uuid, ModuleModel $model): string
+    {
+        $page = PageModel::findByPk((int) $model->jumpTo);
+
+        if (null !== $page) {
+            return $this->contentUrlGenerator->generate($page, ['uuid' => $uuid]);
         }
 
-        $html = '<div class="mod_issue_service_list"><table><thead><tr><th>Ticket</th><th>Titel</th><th>Service</th><th>Status</th><th>Aktualisiert</th></tr></thead><tbody>';
-
-        foreach ($issues as $issue) {
-            $html .= sprintf(
-                '<tr><td><a href="%s">%s</a></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>',
-                StringUtil::specialchars($router->generate('issue_service_detail', ['uuid' => (string) $issue['uuid']])),
-                StringUtil::specialchars((string) $issue['ticket_number']),
-                StringUtil::specialchars((string) $issue['title']),
-                StringUtil::specialchars((string) $issue['service_title']),
-                StringUtil::specialchars((string) $issue['status_title']),
-                StringUtil::specialchars((string) $issue['last_public_activity_at']),
-            );
-        }
-
-        return $html.'</tbody></table></div>';
+        return $this->urlGenerator->generate('issue_service_detail', ['uuid' => $uuid]);
     }
 }
+    

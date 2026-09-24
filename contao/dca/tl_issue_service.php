@@ -9,6 +9,7 @@ $GLOBALS['TL_DCA']['tl_issue_service'] = [
 	'config' => [
 		'dataContainer' => DC_Table::class, 
 		'enableVersioning' => true, 
+		'markAsCopy' => 'title',
 		'sql' => [
 			'keys' => [
 				'id' => 'primary', 
@@ -55,7 +56,7 @@ $GLOBALS['TL_DCA']['tl_issue_service'] = [
 		],
 		'alias' => [
 			'inputType' => 'text', 
-			'eval' => ['mandatory' => true, 'maxlength' => 160, 'rgxp' => 'alias'], 
+			'eval' => ['mandatory' => true, 'maxlength' => 160, 'rgxp' => 'alias', 'doNotCopy' => true], 
 			'search' => true, 
 			'sql' => "varchar(160) NOT NULL default ''"
 		],

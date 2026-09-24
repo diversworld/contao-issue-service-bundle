@@ -25,4 +25,10 @@ class IssueServiceListener
     {
         return $this->generateAliasWithValidation($this->db, $this->slug, $varValue, $dc, 'tl_issue_service');
     }
+
+    #[AsCallback(table: 'tl_issue_service', target: 'config.oncopy')]
+    public function onCopy(int|string $insertId, DataContainer $dc): void
+    {
+        $this->updateAliasAfterCopy($this->db, $this->slug, $insertId, 'tl_issue_service');
+    }
 }

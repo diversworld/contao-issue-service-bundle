@@ -25,4 +25,10 @@ class IssueCategoryListener
     {
         return $this->generateAliasWithValidation($this->db, $this->slug, $varValue, $dc, 'tl_issue_category', 'title', 'alias', ['service_id']);
     }
+
+    #[AsCallback(table: 'tl_issue_category', target: 'config.oncopy')]
+    public function onCopy(int|string $insertId, DataContainer $dc): void
+    {
+        $this->updateAliasAfterCopy($this->db, $this->slug, $insertId, 'tl_issue_category', 'title', 'alias', ['service_id']);
+    }
 }

@@ -12,6 +12,45 @@ use Doctrine\DBAL\Connection;
 trait AliasHandlerTrait
 {
     /** @param list<string> $scopeFields */
+    protected function updateAliasAfterCopy(
+        Connection $db,
+        Slug $slug,
+        int|string $insertId,
+        string $table,
+        string $titleField = 'title',
+        string $aliasField = 'alias',
+        array $scopeFields = []
+    ): void
+    {
+        $record = $db->fetchAssociative(sprintf('SELECT * FROM %s WHERE id=?', $table), [$insertId]);
+
+        if (false === $record) {
+            return;
+        }
+
+        $aliasExists = function (string $alias) use ($db, $insertId, $table, $aliasField, $scopeFields, $record): bool {
+            $conditions = ["$aliasField=?", 'id!=?'];
+            $parameters = [$alias, $insertId];
+
+            foreach ($scopeFields as $scopeField) {
+                $conditions[] = "$scopeField=?";
+                $parameters[] = $record[$scopeField] ?? null;
+            }
+
+            return (bool) $db->fetchOne(
+                sprintf('SELECT id FROM %s WHERE %s LIMIT 1', $table, implode(' AND ', $conditions)),
+                $parameters
+            );
+        };
+
+        $db->update(
+            $table,
+            [$aliasField => $slug->generate((string) ($record[$titleField] ?? ''), [], $aliasExists)],
+            ['id' => $insertId]
+        );
+    }
+
+    /** @param list<string> $scopeFields */
     protected function generateAliasWithValidation(
         Connection    $db,
         Slug          $slug,

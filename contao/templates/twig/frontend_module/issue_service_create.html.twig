@@ -1,0 +1,13 @@
+{% extends "@Contao/frontend_module/_base.html.twig" %}
+
+{% block content %}
+    <div class="issue-service issue-service-create">
+        {% if loginRequired %}
+            <p class="empty">{{ loginRequiredMessage }}</p>
+        {% else %}
+            {{ form_start(form, {action: action}) }}
+                {{ form_widget(form) }}
+            {{ form_end(form) }}
+        {% endif %}
+    </div>
+{% endblock %}

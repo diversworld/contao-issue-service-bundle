@@ -1,0 +1,33 @@
+{% extends "@Contao/frontend_module/_base.html.twig" %}
+
+{% block content %}
+    <div class="issue-service issue-service-detail">
+        {% if issue is empty %}
+            <p class="empty">{{ emptyMessage }}</p>
+        {% else %}
+            <h3>{{ issue.ticket_number }} - {{ issue.title }}</h3>
+
+            <dl>
+                <dt>Service</dt>
+                <dd>{{ issue.service_title }}</dd>
+                <dt>Status</dt>
+                <dd>{{ issue.status_title }}</dd>
+                <dt>Beschreibung</dt>
+                <dd>{{ issue.description|nl2br }}</dd>
+            </dl>
+
+            <h4>Verlauf</h4>
+            {% for entry in timeline %}
+                <article>
+                    <time>{{ entry.created_at }}</time>
+                    <p>{{ entry.text }}</p>
+                </article>
+            {% endfor %}
+
+            <h4>Antworten</h4>
+            {{ form_start(commentForm, {action: path('issue_service_comment', {uuid: issue.uuid|default('')})}) }}
+                {{ form_widget(commentForm) }}
+            {{ form_end(commentForm) }}
+        {% endif %}
+    </div>
+{% endblock %}

@@ -4,26 +4,109 @@ declare(strict_types=1);
 
 namespace Diversworld\ContaoIssueServiceBundle\FrontendModule;
 
-use Contao\Module;
-use Contao\StringUtil;
-use Contao\System;
+use Contao\CoreBundle\Controller\FrontendModule\AbstractFrontendModuleController;
+use Contao\CoreBundle\Csrf\ContaoCsrfTokenManager;
+use Contao\CoreBundle\DependencyInjection\Attribute\AsFrontendModule;
+use Contao\CoreBundle\Routing\ContentUrlGenerator;
+use Contao\CoreBundle\Twig\FragmentTemplate;
+use Contao\FrontendUser;
+use Contao\ModuleModel;
+use Contao\PageModel;
+use Diversworld\ContaoIssueServiceBundle\Application\AttachmentService;
+use Diversworld\ContaoIssueServiceBundle\Application\IssueApplicationService;
+use Diversworld\ContaoIssueServiceBundle\Domain\Dto\CreateIssueCommand;
+use Diversworld\ContaoIssueServiceBundle\Form\IssueCreateType;
+use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-final class IssueCreateModule extends Module
+#[AsFrontendModule(IssueCreateModule::TYPE, category: 'issue_service', template: 'frontend_module/issue_service_create')]
+final class IssueCreateModule extends AbstractFrontendModuleController
 {
-    protected function compile(): void
-    {
+    use IssueFrontendModuleTemplateTrait;
+
+    public const TYPE = 'issue_service_create';
+
+    public function __construct(
+        private readonly FormFactoryInterface $formFactory,
+        private readonly IssueApplicationService $issues,
+        private readonly AttachmentService $attachments,
+        private readonly ContentUrlGenerator $contentUrlGenerator,
+        private readonly ContaoCsrfTokenManager $csrfTokenManager,
+        #[Autowire(param: 'contao.csrf_token_name')]
+        private readonly string $csrfTokenName,
+        private readonly UrlGeneratorInterface $urlGenerator,
+    ) {
     }
 
-    public function generate(): string
+    protected function getResponse(FragmentTemplate $template, ModuleModel $model, Request $request): Response
     {
-        $router = System::getContainer()->get('router');
-        $label = $GLOBALS['TL_LANG']['MSC']['issue_service_create_link'] ?? 'Neues Issue erstellen';
+        $this->setModuleTemplateDefaults($template, $model);
 
-        return sprintf(
-            '<div class="mod_issue_service_create%s"><p><a class="button" href="%s">%s</a></p></div>',
-            '' !== ($this->cssID[1] ?? '') ? ' '.StringUtil::specialchars($this->cssID[1]) : '',
-            StringUtil::specialchars($router->generate('issue_service_create')),
-            StringUtil::specialchars($label),
-        );
+        $user = FrontendUser::getInstance();
+
+        if (!$user->id) {
+            $template->set('loginRequired', true);
+            $template->set('loginRequiredMessage', $GLOBALS['TL_LANG']['MSC']['issue_service_login_required'] ?? 'Bitte melden Sie sich an, um ein Issue zu erstellen.');
+
+            return $template->getResponse();
+        }
+
+        $form = $this->formFactory->create(IssueCreateType::class, null, $this->getContaoCsrfFormOptions());
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $issue = $this->issues->create(
+                new CreateIssueCommand(
+                    (int) $user->id,
+                    (int) $data['serviceId'],
+                    $data['categoryId'] ? (int) $data['categoryId'] : null,
+                    (string) $data['type'],
+                    trim((string) $data['title']),
+                    trim((string) $data['description']),
+                ),
+            );
+
+            foreach ($form->get('attachments')->getData() ?? [] as $file) {
+                $this->attachments->upload($issue['id'], $file, 'member', (int) $user->id);
+            }
+
+            return new RedirectResponse($this->generateDetailUrl((string) $issue['uuid'], $model));
+        }
+
+        $template->set('loginRequired', false);
+        $template->set('form', $form->createView());
+        $template->set('action', $request->getUri());
+
+        $response = $template->getResponse();
+        $response->setPrivate();
+        $response->headers->set('Cache-Control', 'no-cache, no-store');
+
+        return $response;
+    }
+
+    private function generateDetailUrl(string $uuid, ModuleModel $model): string
+    {
+        $page = PageModel::findByPk((int) $model->jumpTo);
+
+        if (null !== $page) {
+            return $this->contentUrlGenerator->generate($page, ['uuid' => $uuid]);
+        }
+
+        return $this->urlGenerator->generate('issue_service_detail', ['uuid' => $uuid]);
+    }
+
+    /** @return array{csrf_field_name: string, csrf_token_manager: ContaoCsrfTokenManager, csrf_token_id: string} */
+    private function getContaoCsrfFormOptions(): array
+    {
+        return [
+            'csrf_field_name' => 'REQUEST_TOKEN',
+            'csrf_token_manager' => $this->csrfTokenManager,
+            'csrf_token_id' => $this->csrfTokenName,
+        ];
     }
 }

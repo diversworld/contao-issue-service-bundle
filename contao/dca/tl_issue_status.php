@@ -6,7 +6,7 @@ use Contao\DataContainer;
 use Contao\DC_Table;
 
 $GLOBALS['TL_DCA']['tl_issue_status'] = [
-	'config' => ['dataContainer' => DC_Table::class, 'enableVersioning' => true, 'sql' => ['keys' => ['id' => 'primary', 'status_key' => 'unique']]],
+	'config' => ['dataContainer' => DC_Table::class, 'enableVersioning' => true, 'markAsCopy' => 'title', 'sql' => ['keys' => ['id' => 'primary', 'status_key' => 'unique']]],
 	'list' => ['sorting' => ['mode' => DataContainer::MODE_SORTED, 
 	'fields' => ['sort_order'], 'flag' => DataContainer::SORT_ASC], 
 	'label' => ['fields' => ['title', 'status_key'], 'format' => '%s [%s]'], 
@@ -24,7 +24,7 @@ $GLOBALS['TL_DCA']['tl_issue_status'] = [
 	'fields' => [
 		'id' => ['sql' => 'int unsigned NOT NULL auto_increment'],
 		'tstamp' => ['sql' => "int unsigned NOT NULL default 0"],
-		'status_key' => ['inputType' => 'text', 'eval' => ['mandatory' => true, 'maxlength' => 32, 'rgxp' => 'alias'], 'search' => true, 'sql' => "varchar(32) NOT NULL default ''"],
+		'status_key' => ['inputType' => 'text', 'eval' => ['mandatory' => true, 'maxlength' => 32, 'rgxp' => 'alias', 'doNotCopy' => true], 'search' => true, 'sql' => "varchar(32) NOT NULL default ''"],
 		'title' => ['inputType' => 'text', 'eval' => ['mandatory' => true, 'maxlength' => 100], 'search' => true, 'sql' => "varchar(100) NOT NULL default ''"],
 		'sort_order' => ['inputType' => 'text', 'eval' => ['mandatory' => true, 'rgxp' => 'natural'], 'sql' => "smallint unsigned NOT NULL default 0"],
 		'is_initial' => ['inputType' => 'checkbox', 'sql' => "tinyint(1) NOT NULL default 0"],

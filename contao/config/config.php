@@ -15,6 +15,9 @@ use Diversworld\ContaoIssueServiceBundle\Model\IssueServiceGroupModel;
 use Diversworld\ContaoIssueServiceBundle\Model\IssueNotificationModel;
 use Diversworld\ContaoIssueServiceBundle\Model\IssueSequenceModel;
 use Diversworld\ContaoIssueServiceBundle\Backend\IssueDashboardModule;
+use Diversworld\ContaoIssueServiceBundle\FrontendModule\IssueCreateModule;
+use Diversworld\ContaoIssueServiceBundle\FrontendModule\IssueDetailModule;
+use Diversworld\ContaoIssueServiceBundle\FrontendModule\IssueListModule;
 
 $GLOBALS['BE_MOD']['issue_service_management'] = [
 
@@ -49,6 +52,8 @@ $GLOBALS['BE_MOD']['issue_service_management'] = [
     ],
 ];
 
+/* Backend Module */
+
 $GLOBALS['TL_MODELS']['tl_issue'] = IssueModel::class;
 $GLOBALS['TL_MODELS']['tl_issue_service'] = IssueServiceModel::class;
 $GLOBALS['TL_MODELS']['tl_issue_category'] = IssueCategoryModel::class;
@@ -61,3 +66,11 @@ $GLOBALS['TL_MODELS']['tl_issue_settings'] = IssueSettingsModel::class;
 $GLOBALS['TL_MODELS']['tl_issue_service_group'] = IssueServiceGroupModel::class;
 $GLOBALS['TL_MODELS']['tl_issue_notification'] = IssueNotificationModel::class;
 $GLOBALS['TL_MODELS']['tl_issue_sequence'] = IssueSequenceModel::class;
+
+/* Frontend Module*/
+
+$GLOBALS['FE_MOD']['issue_service'] = [
+    'issue_service_list' => IssueListModule::class,
+    'issue_service_create' => IssueCreateModule::class,
+    'issue_service_detail' => IssueDetailModule::class,
+];

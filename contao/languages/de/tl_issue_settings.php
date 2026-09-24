@@ -1,8 +1,13 @@
 <?php
 
 $GLOBALS['TL_LANG']['tl_issue_settings']['setting_legend'] = 'Einstellung';
+$GLOBALS['TL_LANG']['tl_issue_settings']['new'] = ['Neue Einstellung', 'Eine neue Einstellung anlegen.'];
+$GLOBALS['TL_LANG']['tl_issue_settings']['edit'] = ['Einstellung bearbeiten', 'Einstellung ID %s bearbeiten.'];
+$GLOBALS['TL_LANG']['tl_issue_settings']['delete'] = ['Einstellung loeschen', 'Einstellung ID %s loeschen.'];
+$GLOBALS['TL_LANG']['tl_issue_settings']['show'] = ['Einstellung-Details', 'Details der Einstellung ID %s anzeigen.'];
 $GLOBALS['TL_LANG']['tl_issue_settings']['setting_key'] = ['Einstellung', 'Wählen Sie die zu bearbeitende Einstellung.'];
 $GLOBALS['TL_LANG']['tl_issue_settings']['setting_value'] = ['Wert', 'Legen Sie den Wert fest.'];
+$GLOBALS['TL_LANG']['tl_issue_settings']['value_type'] = ['Werttyp', 'Interner Typ der Einstellung.'];
 $GLOBALS['TL_LANG']['tl_issue_settings']['setting_value_require_login'] = ['Login erforderlich', 'Nur angemeldete Mitglieder dürfen Issues erstellen.'];
 $GLOBALS['TL_LANG']['tl_issue_settings']['setting_value_ticket_pattern'] = ['Ticketnummer-Muster', 'Verfügbare Platzhalter: {SERVICE}, {YEAR}, {SEQ}.'];
 $GLOBALS['TL_LANG']['tl_issue_settings']['setting_value_allowed_extensions'] = ['Erlaubte Dateitypen', 'Wählen Sie die erlaubten Dateiendungen für Anhänge.'];

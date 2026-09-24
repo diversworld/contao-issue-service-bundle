@@ -7,7 +7,18 @@ use Contao\DC_Table;
 
 $GLOBALS['TL_DCA']['tl_issue_transition'] = [
 	'config' => ['dataContainer' => DC_Table::class, 'enableVersioning' => true, 'sql' => ['keys' => ['id' => 'primary', 'from_status_id,to_status_id,role_key' => 'unique']]],
-	'list' => ['sorting' => ['mode' => DataContainer::MODE_SORTED, 'fields' => ['from_status_id', 'to_status_id'], 'flag' => DataContainer::SORT_ASC], 'label' => ['fields' => ['from_status_id', 'to_status_id', 'role_key'], 'format' => '%s -> %s [%s]'], 'operations' => ['edit' => ['href' => 'act=edit', 'icon' => 'edit.svg'], 'delete' => ['href' => 'act=delete', 'icon' => 'delete.svg'], 'show' => ['href' => 'act=show', 'icon' => 'show.svg']]],
+	'list' => ['sorting' => ['mode' => DataContainer::MODE_SORTED, 'fields' => ['from_status_id', 'to_status_id'], 
+	'flag' => DataContainer::SORT_ASC], 
+	'label' => ['fields' => ['from_status_id', 'to_status_id', 'role_key'], 'format' => '%s -> %s [%s]'], 
+	'operations' => [
+		'edit',
+		'children',
+		'copy',
+		'cut',
+		'delete',
+		'toggle',
+		'show'
+	]],
 	'palettes' => ['default' => '{transition_legend},from_status_id,to_status_id,role_key,require_public_comment,published'],
 	'fields' => [
 		'id' => ['sql' => 'int unsigned NOT NULL auto_increment'],

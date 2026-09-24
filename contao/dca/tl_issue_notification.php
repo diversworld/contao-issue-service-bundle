@@ -5,7 +5,9 @@ declare(strict_types=1);
 use Contao\DC_Table;
 
 $GLOBALS['TL_DCA']['tl_issue_notification'] = [
-    'config' => ['dataContainer' => DC_Table::class, 'closed' => true, 'notCopyable' => true, 'notEditable' => true, 'sql' => ['keys' => ['id' => 'primary', 'event_uuid,recipient' => 'unique', 'status,next_attempt_at' => 'index']]],
+    'config' => ['dataContainer' => DC_Table::class, 
+    'closed' => true, 'notCopyable' => true, 'notEditable' => true, 
+    'sql' => ['keys' => ['id' => 'primary', 'event_uuid,recipient' => 'unique', 'status,next_attempt_at' => 'index']]],
     'fields' => [
         'id' => ['sql' => 'bigint unsigned NOT NULL auto_increment'],
         'event_uuid' => ['sql' => 'binary(16) NOT NULL'],

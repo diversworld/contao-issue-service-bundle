@@ -30,8 +30,12 @@ $GLOBALS['TL_DCA']['tl_issue_settings'] = [
 			], 
 			'operations' => [
 				'edit', 
-				'delete', 
-				'show'
+				'children',
+				'copy',
+				'cut',
+				'delete',
+				'toggle',
+				'show',
 			]
 		],
 	'palettes' => ['default' => '{setting_legend},setting_key,setting_value'],

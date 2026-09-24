@@ -35,9 +35,13 @@ $GLOBALS['TL_DCA']['tl_issue_category'] = [
             ]
         ],
         'operations' => [
-            'edit' => ['href' => 'act=edit', 'icon' => 'edit.svg'],
-            'delete' => ['href' => 'act=delete', 'icon' => 'delete.svg'],
-            'show' => ['href' => 'act=show', 'icon' => 'show.svg'],
+            'edit',
+            'children',
+            'copy',
+            'cut',
+            'delete',
+            'toggle',
+            'show',
         ],
     ],
     'palettes' => [

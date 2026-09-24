@@ -7,7 +7,18 @@ use Contao\DC_Table;
 
 $GLOBALS['TL_DCA']['tl_issue_service'] = [
 	'config' => ['dataContainer' => DC_Table::class, 'enableVersioning' => true, 'sql' => ['keys' => ['id' => 'primary', 'alias' => 'unique']]],
-	'list' => ['sorting' => ['mode' => DataContainer::MODE_SORTED, 'fields' => ['title'], 'flag' => DataContainer::SORT_ASC], 'label' => ['fields' => ['title', 'alias'], 'format' => '%s [%s]'], 'operations' => ['edit' => ['href' => 'act=edit', 'icon' => 'edit.svg'], 'delete' => ['href' => 'act=delete', 'icon' => 'delete.svg'], 'show' => ['href' => 'act=show', 'icon' => 'show.svg']]],
+	'list' => ['sorting' => ['mode' => DataContainer::MODE_SORTED, 'fields' => ['title'], 
+	'flag' => DataContainer::SORT_ASC], 'label' => ['fields' => ['title', 'alias'], 'format' => '%s [%s]'], 
+	'operations' => [
+		'edit',
+		'children',
+		'copy',
+		'cut',
+		'delete',
+		'toggle',
+		'show',
+		]
+	],
 	'palettes' => ['default' => '{title_legend},title,alias,description;{defaults_legend},default_priority,default_assignee_id,notification_recipients;{publish_legend},published'],
 	'fields' => [
 		'id' => ['sql' => 'int unsigned NOT NULL auto_increment'],

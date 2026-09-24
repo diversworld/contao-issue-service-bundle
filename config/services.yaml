@@ -26,3 +26,6 @@ services:
   Diversworld\ContaoIssueServiceBundle\Application\NotificationService:
     arguments:
       $fromAddress: '%contao_issue_service.mail_from%'
+
+  Diversworld\ContaoIssueServiceBundle\Backend\IssueDashboardModule:
+    public: true

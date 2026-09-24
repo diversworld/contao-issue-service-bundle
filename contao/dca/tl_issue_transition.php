@@ -25,7 +25,7 @@ $GLOBALS['TL_DCA']['tl_issue_transition'] = [
 		'tstamp' => ['sql' => "int unsigned NOT NULL default 0"],
 		'from_status_id' => ['inputType' => 'select', 'foreignKey' => 'tl_issue_status.title', 'eval' => ['mandatory' => true, 'chosen' => true], 'relation' => ['type' => 'hasOne', 'load' => 'eager'], 'sql' => "int unsigned NOT NULL default 0"],
 		'to_status_id' => ['inputType' => 'select', 'foreignKey' => 'tl_issue_status.title', 'eval' => ['mandatory' => true, 'chosen' => true], 'relation' => ['type' => 'hasOne', 'load' => 'eager'], 'sql' => "int unsigned NOT NULL default 0"],
-		'role_key' => ['inputType' => 'select', 'options' => ['member', 'agent', 'manager'], 'eval' => ['mandatory' => true], 'sql' => "varchar(40) NOT NULL default ''"],
+		'role_key' => ['inputType' => 'select', 'options' => ['member', 'agent', 'manager'], 'reference' => &$GLOBALS['TL_LANG']['tl_issue_transition']['role_key_options'], 'eval' => ['mandatory' => true], 'sql' => "varchar(40) NOT NULL default ''"],
 		'require_public_comment' => ['inputType' => 'checkbox', 'sql' => "tinyint(1) NOT NULL default 0"],
 		'published' => ['inputType' => 'checkbox', 'toggle' => true, 'filter' => true, 'sql' => "tinyint(1) NOT NULL default 1"],
 	],

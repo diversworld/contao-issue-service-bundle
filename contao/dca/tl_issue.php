@@ -51,17 +51,27 @@ $GLOBALS['TL_DCA']['tl_issue'] = [
                       {time_legend},created_at,updated_at,last_public_activity_at,resolved_at,closed_at',
     ],
     'fields' => [
-        'id' => ['sql' => 'bigint unsigned NOT NULL auto_increment'],
-        'tstamp' => ['sql' => "int unsigned NOT NULL default 0"],
-        'uuid' => ['sql' => 'binary(16) NULL'],
+        'id' => [
+            'sql' => 'bigint unsigned NOT NULL auto_increment'
+        ],
+        'tstamp' => [
+            'sql' => "int unsigned NOT NULL default 0"
+        ],
+        'uuid' => [
+            'sql' => 'binary(16) NULL'
+        ],
         'ticket_number' => [
             'inputType' => 'text',
             'eval' => ['readonly' => true, 'tl_class' => 'w25'],
             'search' => true,
             'sql' => 'varchar(64) NULL',
         ],
-        'member_id' => ['sql' => 'int unsigned NULL'],
-        'guest_access_hash' => ['sql' => 'char(64) NULL'],
+        'member_id' => [
+            'sql' => 'int unsigned NULL'
+        ],
+        'guest_access_hash' => [
+            'sql' => 'char(64) NULL'
+        ],
         'service_id' => [
             'inputType' => 'select',
             'foreignKey' => 'tl_issue_service.title',
@@ -89,6 +99,7 @@ $GLOBALS['TL_DCA']['tl_issue'] = [
         'issue_type' => [
             'inputType' => 'select',
             'options' => ['incident', 'bug', 'improvement', 'request', 'question'],
+            'reference' => &$GLOBALS['TL_LANG']['tl_issue']['issue_type_options'],
             'eval' => ['mandatory' => true, 'chosen' => true, 'tl_class' => 'w25 clr'],
             'filter' => true,
             'sql' => "varchar(32) NOT NULL default 'request'",
@@ -96,6 +107,7 @@ $GLOBALS['TL_DCA']['tl_issue'] = [
         'priority' => [
             'inputType' => 'select',
             'options' => ['low', 'normal', 'high', 'critical'],
+            'reference' => &$GLOBALS['TL_LANG']['tl_issue']['priority_options'],
             'eval' => ['mandatory' => true, 'chosen' => true, 'tl_class' => 'w25'],
             'filter' => true,
             'sql' => "varchar(16) NOT NULL default 'normal'",

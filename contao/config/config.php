@@ -14,8 +14,13 @@ use Diversworld\ContaoIssueServiceBundle\Model\IssueSettingsModel;
 use Diversworld\ContaoIssueServiceBundle\Model\IssueServiceGroupModel;
 use Diversworld\ContaoIssueServiceBundle\Model\IssueNotificationModel;
 use Diversworld\ContaoIssueServiceBundle\Model\IssueSequenceModel;
+use Diversworld\ContaoIssueServiceBundle\Backend\IssueDashboardModule;
 
 $GLOBALS['BE_MOD']['issue_service_management'] = [
+
+    'issue_service_dashboard' => [
+        'callback' => IssueDashboardModule::class,
+    ],
 
     'issues' => [
         'tables'=>[

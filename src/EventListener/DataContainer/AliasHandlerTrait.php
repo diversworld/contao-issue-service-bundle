@@ -6,29 +6,43 @@ namespace Diversworld\ContaoIssueServiceBundle\EventListener\DataContainer;
 
 use Contao\CoreBundle\Slug\Slug;
 use Contao\DataContainer;
+use Contao\DC_Table;
 use Doctrine\DBAL\Connection;
 
 trait AliasHandlerTrait
 {
+    /** @param list<string> $scopeFields */
     protected function generateAliasWithValidation(
         Connection    $db,
         Slug          $slug,
         mixed         $varValue,
         DataContainer $dc,
         string        $table,
-        string        $titleField = 'title'
+        string        $titleField = 'title',
+        string        $aliasField = 'alias',
+        array         $scopeFields = []
     ): mixed
     {
-        $aliasExists = function (string $alias) use ($db, $dc, $table): bool {
+        $activeRecord = $dc instanceof DC_Table ? $dc->getActiveRecord() : $dc->getCurrentRecord();
+
+        $aliasExists = function (string $alias) use ($db, $dc, $table, $aliasField, $scopeFields, $activeRecord): bool {
+            $conditions = ["$aliasField=?", 'id!=?'];
+            $parameters = [$alias, $dc->id];
+
+            foreach ($scopeFields as $scopeField) {
+                $conditions[] = "$scopeField=?";
+                $parameters[] = $activeRecord[$scopeField] ?? null;
+            }
+
             return (bool)$db->fetchOne(
-                "SELECT id FROM $table WHERE alias=? AND id!=? LIMIT 1",
-                [$alias, $dc->id]
+                sprintf('SELECT id FROM %s WHERE %s LIMIT 1', $table, implode(' AND ', $conditions)),
+                $parameters
             );
         };
 
         if (!$varValue) {
             $varValue = $slug->generate(
-                $dc->activeRecord->{$titleField},
+                (string) ($activeRecord[$titleField] ?? ''),
                 [],
                 $aliasExists
             );

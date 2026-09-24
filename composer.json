@@ -34,6 +34,5 @@
     "test": "phpunit",
     "analyse": "phpstan analyse",
     "check": ["@test", "@analyse"]
-  },
-  "version": "0.2.0"
+  }
 }

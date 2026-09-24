@@ -35,25 +35,26 @@ $GLOBALS['TL_DCA']['tl_issue_category'] = [
             ]
         ],
         'operations' => [
-            'edit',
-            'children',
-            'copy',
-            'cut',
-            'delete',
-            'toggle',
-            'show',
+           'edit',
+           'children',
+           'copy',
+           'cut',
+           'delete',
+           'toggle',
+           'show',
         ],
     ],
     'palettes' => [
-        'default' => '{title_legend},service_id,title,alias;{publish_legend},published',
+        'default' => '{title_legend},service_id,title,alias,description;
+                      {publish_legend},published',
     ],
     'fields' => [
         'id' => [
             'sql' => 'int unsigned NOT NULL auto_increment'
-            ],
+        ],
         'tstamp' => [
             'sql' => "int unsigned NOT NULL default 0"
-            ],
+        ],
         'service_id' => [
             'inputType' => 'select',
             'foreignKey' => 'tl_issue_service.title',
@@ -61,24 +62,29 @@ $GLOBALS['TL_DCA']['tl_issue_category'] = [
             'filter' => true,
             'relation' => ['type' => 'hasOne', 'load' => 'eager'],
             'sql' => "int unsigned NOT NULL default 0"
-            ],
+        ],
         'title' => [
             'inputType' => 'text', 
             'eval' => ['mandatory' => true, 'maxlength' => 160], 
             'search' => true, 
             'sql' => "varchar(160) NOT NULL default ''"
-            ],
+        ],
         'alias' => [
             'inputType' => 'text', 
             'eval' => ['mandatory' => true, 'maxlength' => 160, 'rgxp' => 'alias'], 
             'search' => true, 
             'sql' => "varchar(160) NOT NULL default ''"
-            ],
+        ],
+        'description' => [
+            'inputType' => 'textarea',
+            'eval' => ['maxlength' => 255],
+            'sql' => 'varchar(255) NULL'
+        ],
         'published' => [
             'inputType' => 'checkbox', 
             'toggle' => true, 
             'filter' => true, 
             'sql' => "tinyint(1) NOT NULL default 1"
-            ],
+        ],
     ],
 ];

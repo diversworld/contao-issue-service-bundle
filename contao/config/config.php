@@ -29,7 +29,12 @@ $GLOBALS['BE_MOD']['issue_service_management'] = [
     ],
     'issue_service_services' => [
         'tables'=>[
-            'tl_issue_service','tl_issue_category'
+            'tl_issue_service'
+        ]
+    ],
+    'issue_service_categories' => [
+        'tables'=>[
+            'tl_issue_category'
         ]
     ],
     'issue_service_workflow' => [

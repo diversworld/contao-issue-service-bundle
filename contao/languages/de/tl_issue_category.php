@@ -11,4 +11,5 @@ $GLOBALS['TL_LANG']['tl_issue_category']['show'] = ['Kategorie-Details', 'Detail
 $GLOBALS['TL_LANG']['tl_issue_category']['service_id'] = ['Service', 'Service, zu dem diese Kategorie gehoert.'];
 $GLOBALS['TL_LANG']['tl_issue_category']['title'] = ['Titel', 'Name der Kategorie.'];
 $GLOBALS['TL_LANG']['tl_issue_category']['alias'] = ['Alias', 'Eindeutiger Alias der Kategorie innerhalb des Services.'];
+$GLOBALS['TL_LANG']['tl_issue_category']['description'] = ['Beschreibung', 'Kurze Beschreibung, wann diese Kategorie verwendet werden soll.'];
 $GLOBALS['TL_LANG']['tl_issue_category']['published'] = ['Veroeffentlicht', 'Die Kategorie fuer neue Issues verfuegbar machen.'];

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Diversworld\ContaoIssueServiceBundle\ContaoManager;
 
+use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\ManagerPlugin\Bundle\BundlePluginInterface;
 use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
 use Contao\ManagerPlugin\Bundle\Parser\ParserInterface;
@@ -17,7 +18,10 @@ final class Plugin implements BundlePluginInterface, RoutingPluginInterface {
 
     public function getBundles(ParserInterface $parser): array 
     { 
-        return [BundleConfig::create(ContaoIssueServiceBundle::class)]; 
+        return [
+            BundleConfig::create(ContaoIssueServiceBundle::class)
+                ->setLoadAfter([ContaoCoreBundle::class]),
+        ]; 
     }
 
     public function getRouteCollection(LoaderResolverInterface $resolver, KernelInterface $kernel): ?RouteCollection

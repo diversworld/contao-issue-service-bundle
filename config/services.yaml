@@ -27,5 +27,8 @@ services:
     arguments:
       $fromAddress: '%contao_issue_service.mail_from%'
 
+  Diversworld\ContaoIssueServiceBundle\Application\SettingsService:
+    public: true
+
   Diversworld\ContaoIssueServiceBundle\Backend\IssueDashboardModule:
     public: true

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Contao\DataContainer;
 use Contao\DC_Table;
+use Diversworld\ContaoIssueServiceBundle\EventListener\DataContainer\IssueDcaCallbacks;
 
 $GLOBALS['TL_DCA']['tl_issue'] = [
     'config' => [
@@ -11,6 +12,7 @@ $GLOBALS['TL_DCA']['tl_issue'] = [
         'notCopyable' => true,
         'notDeletable' => true,
         'enableVersioning' => true,
+        'onsubmit_callback' => [[IssueDcaCallbacks::class, 'updateGeneratedFields']],
         'sql' => [
             'keys' => [
                 'id' => 'primary',
@@ -44,12 +46,12 @@ $GLOBALS['TL_DCA']['tl_issue'] = [
     'fields' => [
         'id' => ['sql' => 'bigint unsigned NOT NULL auto_increment'],
         'tstamp' => ['sql' => "int unsigned NOT NULL default 0"],
-        'uuid' => ['sql' => 'binary(16) NOT NULL'],
+        'uuid' => ['sql' => 'binary(16) NULL'],
         'ticket_number' => [
             'inputType' => 'text',
             'eval' => ['readonly' => true],
             'search' => true,
-            'sql' => "varchar(64) NOT NULL default ''",
+            'sql' => 'varchar(64) NULL',
         ],
         'member_id' => ['sql' => 'int unsigned NULL'],
         'guest_access_hash' => ['sql' => 'char(64) NULL'],
@@ -92,7 +94,7 @@ $GLOBALS['TL_DCA']['tl_issue'] = [
         'description' => [
             'inputType' => 'textarea',
             'eval' => ['mandatory' => true, 'rte' => 'tinyMCE'],
-            'sql' => 'mediumtext NOT NULL',
+            'sql' => 'mediumtext NULL',
         ],
         'priority' => [
             'inputType' => 'select',
@@ -113,9 +115,9 @@ $GLOBALS['TL_DCA']['tl_issue'] = [
             'eval' => ['rte' => 'tinyMCE'],
             'sql' => 'mediumtext NULL',
         ],
-        'created_at' => ['inputType' => 'text', 'eval' => ['readonly' => true], 'sql' => 'datetime NOT NULL'],
-        'updated_at' => ['inputType' => 'text', 'eval' => ['readonly' => true], 'sql' => 'datetime NOT NULL'],
-        'last_public_activity_at' => ['inputType' => 'text', 'eval' => ['readonly' => true], 'sql' => 'datetime NOT NULL'],
+        'created_at' => ['inputType' => 'text', 'eval' => ['readonly' => true], 'sql' => 'datetime NULL'],
+        'updated_at' => ['inputType' => 'text', 'eval' => ['readonly' => true], 'sql' => 'datetime NULL'],
+        'last_public_activity_at' => ['inputType' => 'text', 'eval' => ['readonly' => true], 'sql' => 'datetime NULL'],
         'resolved_at' => ['inputType' => 'text', 'eval' => ['readonly' => true], 'sql' => 'datetime NULL'],
         'closed_at' => ['inputType' => 'text', 'eval' => ['readonly' => true], 'sql' => 'datetime NULL'],
         'deleted_at' => ['sql' => 'datetime NULL'],

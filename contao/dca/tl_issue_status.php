@@ -18,7 +18,7 @@ $GLOBALS['TL_DCA']['tl_issue_status'] = [
 		'is_initial' => ['inputType' => 'checkbox', 'sql' => "tinyint(1) NOT NULL default 0"],
 		'is_resolved' => ['inputType' => 'checkbox', 'sql' => "tinyint(1) NOT NULL default 0"],
 		'is_closed' => ['inputType' => 'checkbox', 'sql' => "tinyint(1) NOT NULL default 0"],
-		'color' => ['inputType' => 'text', 'eval' => ['maxlength' => 7, 'rgxp' => 'color'], 'sql' => 'varchar(7) NULL'],
+		'color' => ['inputType' => 'text', 'eval' => ['maxlength' => 6, 'colorpicker' => true, 'isHexColor' => true, 'decodeEntities' => true, 'tl_class' => 'w25 wizard'], 'sql' => 'varchar(6) NULL'],
 		'published' => ['inputType' => 'checkbox', 'toggle' => true, 'filter' => true, 'sql' => "tinyint(1) NOT NULL default 1"],
 	],
 ];

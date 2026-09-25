@@ -17,7 +17,7 @@ use Diversworld\ContaoIssueServiceBundle\Security\IssueVoter;
 #[Route('/service/issues/{uuid}',name:'issue_service_detail',defaults:['_scope'=>'frontend'],requirements:['uuid'=>'[0-9a-fA-F-]{36}'],methods:['GET'])] 
 final class IssueDetailController extends AbstractController 
 { 
-    public function __invoke(string $uuid,IssueRepository $repo,IssueDetailUrlGenerator $detailUrlGenerator):Response
+    public function __invoke(string $uuid,IssueRepository $repo,\Contao\CoreBundle\Csrf\ContaoCsrfTokenManager $csrfTokenManager,IssueDetailUrlGenerator $detailUrlGenerator):Response
     {
         $u=$this->getUser();
         $member=$u instanceof FrontendUser?(int)$u->id:null;
@@ -39,7 +39,7 @@ final class IssueDetailController extends AbstractController
             [
                 'issue'=>$issue,
                 'timeline'=>$repo->publicTimeline((int)$issue['id']),
-                'commentForm'=>$this->createForm(CommentType::class)->createView()
+                'commentForm'=>$this->createForm(CommentType::class, null, ['csrf_field_name' => 'REQUEST_TOKEN', 'csrf_token_manager' => $csrfTokenManager, 'csrf_token_id' => $this->getParameter('contao.csrf_token_name')])->createView()
             ]
         );
     } 

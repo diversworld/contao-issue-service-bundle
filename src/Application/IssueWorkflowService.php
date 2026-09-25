@@ -50,13 +50,13 @@ final class IssueWorkflowService
                 
                 $changed=$db->executeStatement(
                     'UPDATE tl_issue 
-                    SET status_id=:s,updated_at=:u,
+                    SET status_id=:s,updated_at=:u,last_public_activity_at=:activity,
                     version=version+1 
                     WHERE id=:id 
                     AND version=:v',
                     [
                         's'=>$targetStatusId,
-                        'u'=>$now,'id'=>$issueId,
+                        'u'=>$now,'activity'=>$now,'id'=>$issueId,
                         'v'=>$issue['version']
                     ]
                 );

@@ -14,7 +14,8 @@
     {% for e in timeline %}
         <article>
             <time>{{ e.created_at }}</time>
-            <p>{{ e.text }}</p>
+                            {% if e.entry_type == 'comment' %}<span>{{ e.author_type == 'user' ? 'Bearbeiter' : 'Nutzer' }}</span>{% endif %}
+            <p>{{ e.text|nl2br }}</p>
         </article>
     {% endfor %}
 

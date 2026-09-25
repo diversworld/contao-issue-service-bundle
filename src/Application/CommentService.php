@@ -61,6 +61,8 @@ final class CommentService
                         ]
                     );
                     
+                    $db->update('tl_issue', ['updated_at' => $now, 'tstamp' => time()], ['id' => $issueId]);
+
                     if($notify){
                         $db->update(
                             'tl_issue',

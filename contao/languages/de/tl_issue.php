@@ -39,3 +39,4 @@ $GLOBALS['TL_LANG']['tl_issue']['priority_options'] = [
     'high' => 'Hoch',
     'critical' => 'Kritisch',
 ];
+$GLOBALS['TL_LANG']['tl_issue']['journal_legend'] = 'Journal und Antworten';

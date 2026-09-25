@@ -29,7 +29,8 @@
                     {% for entry in timeline %}
                         <article class="issue-service__timeline-entry">
                             <time>{{ entry.created_at }}</time>
-                            <p>{{ entry.text }}</p>
+                            {% if entry.entry_type == 'comment' %}<span>{{ entry.author_type == 'user' ? 'Bearbeiter' : 'Nutzer' }}</span>{% endif %}
+                            <p>{{ entry.text|nl2br }}</p>
                         </article>
                     {% else %}
                         <p class="issue-service__empty">Noch keine Verlaufseintraege vorhanden.</p>

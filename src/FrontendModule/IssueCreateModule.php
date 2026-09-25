@@ -75,6 +75,7 @@ final class IssueCreateModule extends AbstractFrontendModuleController
                     trim((string) $data['title']),
                     trim((string) $data['description']),
                     priority: (string) $data['priority'],
+                    attachmentDirectory: $directory,
                 ),
             );
 

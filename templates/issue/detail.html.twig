@@ -14,7 +14,7 @@
     <h4>Anhänge</h4>
     <ul>
         {% for attachment in attachments|default([]) %}
-            <li><a href="{{ path('issue_service_attachment', {uuid: issue.uuid, id: attachment.id}) }}">{{ attachment.original_name }}</a> ({{ (attachment.file_size / 1024)|round(1) }} KB)</li>
+            <li><a href="{{ path('issue_service_attachment', {uuid: issue.uuid, id: attachment.id}) }}"> {{ attachment.original_name }} herunterladen</a> · <a href="{{ path('issue_service_attachment', {uuid: issue.uuid, id: attachment.id, preview: 1}) }}" target="_blank" rel="noopener noreferrer">Anzeigen</a> ({{ (attachment.file_size / 1024)|round(1) }} KB)</li>
         {% else %}
             <li>Keine Anhänge vorhanden.</li>
         {% endfor %}
@@ -30,8 +30,9 @@
         </article>
     {% endfor %}
 
-    <h2>Antworten</h2>
+    <h2>Antworten und Anhänge ergänzen</h2>
     {{ form_start(commentForm, {action: path('issue_service_comment', {uuid: issue.uuid|default('')})}) }}
-        {{ form_widget(commentForm) }}
+        {{ form_errors(commentForm) }}
+                    {{ form_widget(commentForm) }}
     {{ form_end(commentForm) }}
 </main>

@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('%contao.backend.route_prefix%/issue-attachment/{id}', name: 'issue_service_backend_attachment', defaults: ['_scope' => 'backend'], requirements: ['id' => '\d+'], methods: ['GET'])]
 final class AttachmentDownloadController extends AbstractController
 {
-    public function __invoke(int $id, Connection $db, AttachmentService $files): BinaryFileResponse
+    public function __invoke(int $id, Connection $db, AttachmentService $files, \Symfony\Component\HttpFoundation\Request $request): BinaryFileResponse
     {
         $user = $this->getUser();
         if (!$user instanceof BackendUser || (!$user->isAdmin && !$user->hasAccess('issue_service_issues', 'modules'))) {
@@ -24,11 +24,8 @@ final class AttachmentDownloadController extends AbstractController
         if (!$row || !is_file($files->path($row['storage_key']))) {
             throw $this->createNotFoundException();
         }
-        $response = new BinaryFileResponse($files->path($row['storage_key']));
-        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $row['original_name']);
-        $response->headers->set('Content-Type', 'application/octet-stream');
-        $response->headers->set('X-Content-Type-Options', 'nosniff');
-        $response->headers->set('Cache-Control', 'private, no-store');
-        return $response;
+        return \Diversworld\ContaoIssueServiceBundle\Application\AttachmentResponse::create(
+            $files->path($row['storage_key']), $row['original_name'], $row['mime_type'], $request->query->getBoolean('preview'),
+        );
     }
 }

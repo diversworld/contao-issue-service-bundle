@@ -17,7 +17,7 @@ use Diversworld\ContaoIssueServiceBundle\Security\IssueVoter;
 #[Route('/service/issues/{uuid}/comment',name:'issue_service_comment',defaults:['_scope'=>'frontend'],requirements:['uuid'=>'[0-9a-fA-F-]{36}'],methods:['POST'])]
 final class IssueCommentController extends AbstractController 
 { 
-    public function __invoke(string $uuid,Request $r,IssueRepository $repo,\Contao\CoreBundle\Csrf\ContaoCsrfTokenManager $csrfTokenManager,CommentService $svc):Response
+    public function __invoke(string $uuid,Request $r,IssueRepository $repo,\Contao\CoreBundle\Csrf\ContaoCsrfTokenManager $csrfTokenManager,CommentService $svc, \Diversworld\ContaoIssueServiceBundle\Application\AttachmentService $files, \Diversworld\ContaoIssueServiceBundle\Application\SettingsService $settings):Response
     {
         $u=$this->getUser();
         
@@ -38,10 +38,28 @@ final class IssueCommentController extends AbstractController
         ]);
         $f->handleRequest($r);
         
-        if($f->isSubmitted()&&$f->isValid())
-            $svc->addPublic(
-                (int)$issue['id'],'member',(int)$u->id,(string)$f->getData()['body']
-            );
+        if ($f->isSubmitted() && $f->isValid()) {
+            $db = $repo->connection();
+            $db->transactional(function () use ($db, $f, $issue, $u, $files, $svc, $settings): void {
+                $db->fetchOne('SELECT id FROM tl_issue WHERE id=:id FOR UPDATE', ['id' => $issue['id']]);
+                $uploads = $f->get('attachments')->getData() ?? [];
+                $count = (int) $db->fetchOne('SELECT COUNT(*) FROM tl_issue_attachment WHERE issue_id=:id', ['id' => $issue['id']]);
+                if ($uploads && $count + count($uploads) > $settings->int('max_files_per_issue', 5)) {
+                    $f->get('attachments')->addError(new \Symfony\Component\Form\FormError('Die maximale Anzahl der Anhänge für dieses Ticket ist erreicht.'));
+                    return;
+                }
+                $directory = $issue['attachment_directory'] ?? null;
+                if ($directory === null) {
+                    $key = $db->fetchOne('SELECT storage_key FROM tl_issue_attachment WHERE issue_id=:id ORDER BY id LIMIT 1', ['id' => $issue['id']]);
+                    $directory = $key && str_contains($key, '/') ? substr($key, 0, strrpos($key, '/')) : '';
+                }
+                $body = trim((string) $f->get('body')->getData());
+                $commentId = $svc->addPublic((int) $issue['id'], 'member', (int) $u->id, $body !== '' ? $body : 'Anhänge ergänzt.');
+                foreach ($uploads as $upload) {
+                    $files->upload((int) $issue['id'], $upload, 'member', (int) $u->id, $commentId, $directory);
+                }
+            });
+        }
 
         if (!$f->isSubmitted() || !$f->isValid()) {
             return $this->render('@ContaoIssueService/issue/detail.html.twig', [

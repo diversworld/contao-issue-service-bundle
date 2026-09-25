@@ -15,7 +15,7 @@ use Diversworld\ContaoIssueServiceBundle\Security\AttachmentVoter;
 #[Route('/service/issues/{uuid}/attachment/{id}',name:'issue_service_attachment',defaults:['_scope'=>'frontend'],methods:['GET'])] 
 final class AttachmentDownloadController extends AbstractController 
 { 
-    public function __invoke(string $uuid,int $id,Connection $db,AttachmentService $files):BinaryFileResponse
+    public function __invoke(string $uuid,int $id,Connection $db,AttachmentService $files, \Symfony\Component\HttpFoundation\Request $request):BinaryFileResponse
     {
         $row=$db->fetchAssociative(
             "SELECT a.*,i.member_id 
@@ -34,14 +34,8 @@ final class AttachmentDownloadController extends AbstractController
         if (!is_file($files->path($row['storage_key']))) {
             throw $this->createNotFoundException('Attachment file not found.');
         }
-        $r=new BinaryFileResponse($files->path($row['storage_key']));
-        
-        $r->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT,$row['original_name']);
-        $r->headers->set('Content-Type','application/octet-stream');
-        $r->headers->set('X-Content-Type-Options','nosniff');
-        
-        $r->setPrivate();
-        $r->headers->set('Cache-Control', 'private, no-store');
-        return $r;
-    } 
+        return \Diversworld\ContaoIssueServiceBundle\Application\AttachmentResponse::create(
+            $files->path($row['storage_key']), $row['original_name'], $row['mime_type'], $request->query->getBoolean('preview'),
+        );
+    }
 }

@@ -40,7 +40,8 @@ final class IssueJournalCallbacks
         $html .= '<div class="tl_box"><h3>Anhänge</h3><ul>';
         foreach ($this->issues->attachments((int) $dc->id, true) as $attachment) {
             $url = $this->router->generate('issue_service_backend_attachment', ['id' => $attachment['id']]);
-            $html .= '<li><a href="'.$escape($url).'">'.$escape($attachment['original_name']).'</a> ('.round($attachment['file_size'] / 1024, 1).' KB)</li>';
+            $preview = $this->router->generate('issue_service_backend_attachment', ['id' => $attachment['id'], 'preview' => 1]);
+            $html .= '<li><a href="'.$escape($url).'">'.$escape($attachment['original_name']).'</a> · <a href="'.$escape($preview).'" target="_blank" rel="noopener noreferrer">Anzeigen</a> ('.round($attachment['file_size'] / 1024, 1).' KB)</li>';
         }
         $html .= '</ul></div>';
         $authors = ['member' => 'Mitglied', 'guest' => 'Gast', 'user' => 'Bearbeiter', 'system' => 'System'];

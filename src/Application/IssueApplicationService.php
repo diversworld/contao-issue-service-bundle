@@ -55,6 +55,7 @@ final class IssueApplicationService
                         'title'=>$c->title,
                         'description'=>$c->description,
                         'priority'=>$c->priority,
+                        'attachment_directory'=>$c->attachmentDirectory,
                         'created_at'=>$now,
                         'updated_at'=>$now,
                         'last_public_activity_at'=>$now,

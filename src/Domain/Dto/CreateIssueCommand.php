@@ -14,6 +14,7 @@ final readonly class CreateIssueCommand
         public string $title, 
         public string $description, 
         public ?string $guestAccessHash=null,
-        public string $priority='normal')
+        public string $priority='normal',
+        public ?string $attachmentDirectory=null)
     {} 
 }

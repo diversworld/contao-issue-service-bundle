@@ -5,57 +5,68 @@
         {% if issue is empty %}
             <p class="issue-service__empty">{{ emptyMessage }}</p>
         {% else %}
-            <header class="issue-service__header">
-                <p class="issue-service__kicker">{{ issue.ticket_number }}</p>
-                <h3>{{ issue.title }}</h3>
-                <div class="issue-service__meta">
-                    <span class="issue-service__badge">{{ issue.status_title }}</span>
-                    <span>{{ issue.service_title }}</span>
-                </div>
-            </header>
-
-            <dl class="issue-service__definition-list">
-                <dt>Service</dt>
-                <dd>{{ issue.service_title }}</dd>
-                <dt>Status</dt>
-                <dd>{{ issue.status_title }}</dd>
-                <dt>Beschreibung</dt>
-                <dd>{{ issue.description|nl2br }}</dd>
-            </dl>
-
-<section class="issue-service__section">
-    <h4>Anhänge</h4>
-    <ul>
-        {% for attachment in attachments|default([]) %}
-            <li><a href="{{ path('issue_service_attachment', {uuid: issue.uuid, id: attachment.id}) }}"> {{ attachment.original_name }} herunterladen</a> · <a href="{{ path('issue_service_attachment', {uuid: issue.uuid, id: attachment.id, preview: 1}) }}" target="_blank" rel="noopener noreferrer">Anzeigen</a> ({{ (attachment.file_size / 1024)|round(1) }} KB)</li>
-        {% else %}
-            <li>Keine Anhänge vorhanden.</li>
-        {% endfor %}
-    </ul>
-</section>
-
-            <section class="issue-service__section">
-                <h4>Verlauf</h4>
-                <div class="issue-service__timeline">
-                    {% for entry in timeline %}
-                        <article class="issue-service__timeline-entry">
-                            <time>{{ entry.created_at }}</time>
-                            {% if entry.entry_type == 'comment' %}<span>{{ entry.author_type == 'user' ? 'Bearbeiter' : 'Nutzer' }}</span>{% endif %}
-                            <p>{{ entry.text|nl2br }}</p>
-                        </article>
-                    {% else %}
-                        <p class="issue-service__empty">Noch keine Verlaufseintraege vorhanden.</p>
-                    {% endfor %}
-                </div>
-            </section>
-
-            <section class="issue-service__section issue-service__reply">
-                <h4>Antworten und Anhänge ergänzen</h4>
-                {{ form_start(commentForm, {action: path('issue_service_comment', {uuid: issue.uuid|default('')}), attr: {class: 'issue-service__form'}}) }}
-                    {{ form_errors(commentForm) }}
-                    {{ form_widget(commentForm) }}
-                {{ form_end(commentForm) }}
-            </section>
+            {% block detail %}
+                <header class="issue-service__header">
+                    <p class="issue-service__kicker">{{ issue.ticket_number }}</p>
+                    <h3>{{ issue.title }}</h3>
+                    <div class="issue-service__meta">
+                        <span class="issue-service__badge">{{ issue.status_title }}</span>
+                        <span>{{ issue.service_title }}</span>
+                    </div>
+                </header>
+            {% endblock %}
+            {% block specification %}
+                <dl class="issue-service__definition-list">
+                    <dt>Service</dt>
+                    <dd>{{ issue.service_title }}</dd>
+                    <dt>Status</dt>
+                    <dd>{{ issue.status_title }}</dd>
+                    <dt>Beschreibung</dt>
+                    <dd>{{ issue.description|nl2br }}</dd>
+                </dl>
+            {% endblock %}
+            {% block attachment %}
+                <section class="issue-service__section">
+                    <h4>Anhänge</h4>
+                    <ul>
+                        {% for attachment in attachments|default([]) %}
+                            <li><a href="{{ path('issue_service_attachment', {uuid: issue.uuid, id: attachment.id}) }}"> {{ attachment.original_name }} herunterladen</a> · <a href="{{ path('issue_service_attachment', {uuid: issue.uuid, id: attachment.id, preview: 1}) }}" target="_blank" rel="noopener noreferrer">Anzeigen</a> ({{ (attachment.file_size / 1024)|round(1) }} KB)</li>
+                        {% else %}
+                            <li>Keine Anhänge vorhanden.</li>
+                        {% endfor %}
+                    </ul>
+                </section>
+            {% endblock %}
+            {% block timeline %}
+                <section class="issue-service__section ce_accordionStart ce_accordion">
+                    <div class="toggler" role="button" tabindex="0" aria-expanded="false">
+                        <h4>Verlauf</h4>
+                    </div>
+                    
+                    <div class="accordion issue-service__timeline" hidden="">
+                         
+                        {% for entry in timeline %}
+                            <article class="issue-service__timeline-entry">
+                                <time>{{ entry.created_at }}</time>
+                                {% if entry.entry_type == 'comment' %}<span>{{ entry.author_type == 'user' ? 'Bearbeiter' : 'Nutzer' }}</span>{% endif %}
+                                <p>{{ entry.text|nl2br }}</p>
+                            </article>
+                        {% else %}
+                            <p class="issue-service__empty">Noch keine Verlaufseintraege vorhanden.</p>
+                        {% endfor %}
+                        
+                    </div>
+                </section>
+            {% endblock %}
+            {% block reply %}
+                <section class="issue-service__section issue-service__reply">
+                    <h4>Antworten und Anhänge ergänzen</h4>
+                    {{ form_start(commentForm, {action: path('issue_service_comment', {uuid: issue.uuid|default('')}), attr: {class: 'issue-service__form'}}) }}
+                        {{ form_errors(commentForm) }}
+                        {{ form_widget(commentForm) }}
+                    {{ form_end(commentForm) }}
+                </section>
+            {% endblock %}
         {% endif %}
     </div>
 {% endblock %}

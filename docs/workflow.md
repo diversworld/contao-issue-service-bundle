@@ -17,7 +17,7 @@
 - Neue Tickets beginnen mit „Neu“. Eine direkte Wiederherstellung alter Ticketversionen ist gesperrt, da sie den Workflow umgehen würde. Änderungen müssen über die Ticketbearbeitung erfolgen.
 - Servicebezogene Rollen begrenzen Workflow-Aktionen; sie ersetzen keine separate Mandantenisolierung für Ticketlisten oder Downloads.
 
-Die Installation vergibt keine Gruppenrollen und erzeugt keine Übergangsregeln automatisch. Bestehende Zuordnungen in `tl_issue_service_group` werden zusätzlich berücksichtigt.
+Die Installation vergibt keine Gruppenrollen. Die Migration `Version122ExampleWorkflow` ergänzt die unten beschriebenen Beispielregeln automatisch beim Contao-Datenbankupdate (`ddev exec vendor/bin/contao-console contao:migrate`). Bestehende Zuordnungen in `tl_issue_service_group` werden zusätzlich berücksichtigt.
 
 ## Status und Regeln im Backend
 
@@ -45,3 +45,7 @@ Regeln gelten für alle Ticketprofile. Gruppenrollen und Servicezuordnungen sowi
 | Abgelehnt | In Prüfung | manager | Ja |
 
 Auch diese Beispielregeln umgehen keine Profil- oder Serviceberechtigung. Eine normale Antwort ohne ausgewählten Zielstatus ändert den Ticketstatus nicht automatisch.
+
+Beim Kopieren oder „Speichern und duplizieren“ entsteht ein deaktivierter Entwurf ohne Zielstatus. Ausgangsstatus, Rolle und Pflichtantwort werden übernommen. Zielstatus auswählen, gegebenenfalls die Rolle ändern und die neue Regel aktivieren. Auch neue Regeln sind zunächst deaktiviert. Unveränderte Duplikate bleiben unzulässig.
+
+Die Migration ergänzt nur fehlende Kombinationen und verändert weder deaktivierte Regeln noch angepasste Pflichtantworten. Status werden anhand ihres Schlüssels zugeordnet, nicht über feste IDs. Fehlen Status oder Tabellen, werden die zugehörigen Regeln vorerst übersprungen. Gelöschte Beispielregeln werden beim nächsten Migrationslauf wieder angelegt; zum dauerhaften Abschalten eine Regel deaktivieren.

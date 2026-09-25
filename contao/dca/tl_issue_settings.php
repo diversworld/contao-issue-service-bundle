@@ -38,7 +38,9 @@ $GLOBALS['TL_DCA']['tl_issue_settings'] = [
 				'show',
 			]
 		],
-	'palettes' => ['default' => '{setting_legend},title,setting_key,setting_value'],
+	'palettes' => [
+		'default' => '{setting_legend},title,setting_key,setting_value'
+	],
 	'fields' => [
 		'id' => [
 			'sql' => 'int unsigned NOT NULL auto_increment'],
@@ -46,7 +48,8 @@ $GLOBALS['TL_DCA']['tl_issue_settings'] = [
 			'sql' => "int unsigned NOT NULL default 0"],
 		'setting_key' => [
 			'inputType' => 'select', 
-			'options' => IssueSettingsDcaCallbacks::SETTING_KEYS, 'reference' => &$GLOBALS['TL_LANG']['tl_issue_settings']['setting_key_options'], 
+			'options' => IssueSettingsDcaCallbacks::SETTING_KEYS, 
+			'reference' => &$GLOBALS['TL_LANG']['tl_issue_settings']['setting_key_options'], 
 			'eval' => ['mandatory' => true, 'chosen' => true, 'submitOnChange' => true, 'tl_class' => 'w50'], 
 			'search' => true, 
 			'sql' => "varchar(100) NOT NULL default ''"

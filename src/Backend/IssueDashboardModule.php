@@ -77,7 +77,8 @@ final class IssueDashboardModule extends BackendModule
             return '<p class="tl_info">Es sind noch keine Workflow-Status angelegt.</p>';
         }
 
-        $html = '<h3>Statusübersicht</h3><table class="tl_listing showColumns"><thead><tr><th>Status</th><th>Issues</th></tr></thead><tbody>';
+        $html = '<h3>Statusübersicht</h3>
+        <table class="tl_listing showColumns"><thead><tr><th>Status</th><th>Issues</th></tr></thead><tbody>';
 
         foreach ($rows as $index => $row) {
             $color = $row['color'] ? '<span style="display:inline-block;width:12px;height:12px;margin-right:6px;border:1px solid #999;background:#'.StringUtil::specialchars((string) $row['color']).'"></span>' : '';

@@ -1,40 +1,45 @@
-# Contao Issue & Service Management Bundle
+[![License](https://img.shields.io/badge/license-LGPL--3.0--or--later-blue)](LICENSE)
+[![Contao](https://img.shields.io/badge/Contao-5.7%2B%20%7C%206.0%2B-green)](https://contao.org)
+[![PHP](https://img.shields.io/badge/PHP-8.2%2B-purple)](https://www.php.net)
 
-Implementierungsstand für Contao 5.7 und Contao 6 auf Basis des Pflichtenhefts.
+[![Latest Version on Packagist](http://img.shields.io/packagist/v/diversworld/contao-issue-service-bundle.svg?style=flat)](https://packagist.org/packages/diversworld/contao-issue-service-bundle)
+![Dynamic JSON Badge](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fdiversworld%2Fcontao-issue-service-bundle%2Fmain%2Fcomposer.json&query=%24.require%5B%22contao%2Fcore-bundle%22%5D&label=Contao%20Version)
+[![Installations via composer per month](http://img.shields.io/packagist/dm/diversworld/contao-issue-service-bundle.svg?style=flat)](https://packagist.org/packages/diversworld/contao-issue-service-bundle)
+[![Installations via composer total](http://img.shields.io/packagist/dt/diversworld/contao-issue-service-bundle.svg?style=flat)](https://packagist.org/packages/diversworld/contao-issue-service-bundle)
+![Packagist License](https://img.shields.io/packagist/l/diversworld/contao-issue-service-bundle)
 
-## Enthalten
+![Diversworld](docs/dw-logo-k.png "Diversworld Logo")
 
-- Vollständige Tabellenmigration für Services, Kategorien, Status, Übergänge, Issues, Kommentare, Anhänge, Historie, Einstellungen, Servicegruppen und Benachrichtigungs-Outbox
-- Application Services für Erstellung, Workflow, Kommentare, Anhänge, Einstellungen, Retention und Benachrichtigungen
-- DBAL-Repositories und transaktionale Schreibvorgänge
-- Frontend-Controller für Liste, Erfassung, Detail, Kommentar, Wiederöffnung und Download
-- Symfony Forms, CSRF-Prüfung und objektbezogene Voter
-- Backend-DCA für Stammdaten und Einstellungen
-- Konsolenbefehle für Retention und Notification-Retry
-- Twig-Templates, Übersetzungen, Testskelett und CI-Matrix
+# Contao Issue & Service Management
+
+Ticket- und Servicemanagement für Contao: Mitglieder erfassen und verfolgen eigene Tickets im Frontend; Bearbeiter verwalten sie im Backend mit Journal, Anhängen und rollenabhängigen Statuswechseln.
+
+- Services, zugehörige Kategorien und benannte Konfigurationsprofile
+- Ticketliste, Erstellungsformular und Detailansicht für angemeldete Mitglieder
+- Öffentliche Antworten und interne Bearbeitungsnotizen
+- Anhänge mit Download und Vorschau; Ablage in `var` oder `files`
+- Workflowregeln, Gruppenrollen und 23 automatisch ergänzte Beispielregeln
+- E-Mail-Benachrichtigungen mit persönlichen Einstellungen und Wiederholungsversand
 
 ## Installation
 
+Composer-Paket: `diversworld/contao-issue-service-bundle`. Laut Paketdefinition: PHP ≥ 8.2 und Contao `^5.7 || ^6.0`; maßgeblich sind auch die Anforderungen der eingesetzten Contao-Version. Das Paket muss über ein eingerichtetes Composer-Repository verfügbar sein.
+
 ```bash
-composer require vendor/contao-issue-service-bundle
+composer require diversworld/contao-issue-service-bundle
 php vendor/bin/contao-console contao:migrate
 php vendor/bin/contao-console cache:clear
 ```
 
-Danach müssen im Backend die Pflichtwerte unter Service Management / Einstellungen konfiguriert werden.
+Danach unter **Service Management** ein Konfigurationsprofil, Services und Kategorien einrichten, Benutzergruppen zuordnen und die drei Frontend-Module einbinden. In DDEV den Befehlen `ddev exec` voranstellen.
 
-## Wichtige Hinweise
+**[Zum Wiki: Einrichtung, Bedienung und Betrieb](docs/wiki/Home.md)**
 
-- Der Paketname `vendor/...`, Absenderadressen und organisationsspezifische Werte sind vor Veröffentlichung anzupassen. Composer-Auflösung, Functional Tests und Migrationen müssen im konkreten Contao-5.7- und Contao-6-Zielprojekt ausgeführt werden. Die lokale Erstellung dieses Pakets prüft PHP-Syntax und Archivintegrität, ersetzt aber keinen Lauf in einer echten Contao-Installation.
-=======
-# Contao Issue Service Bundle - Test- und Kompatibilitätspaket
+Profile ermöglichen unterschiedliche Einstellungen, sind aber keine vollständige Mandantentrennung. Für private Anhänge `var` verwenden. Lizenz: proprietär, siehe [Paketdefinition](composer.json).
 
-## Prüfung
 
-```bash
-composer update
-composer check
-php vendor/bin/contao-console contao:migrate --no-interaction
-```
+If you like this extension and think it's worth a little donation: You can support me via Paypal.Me:
 
-Siehe `docs/TESTPLAN.md`, `docs/COMPATIBILITY_AUDIT.md` und `docs/REMAINING_INTEGRATION_STEPS.md`.
+[Donation for Diversworld DiveClubManager](https://paypal.me/EckhardBecker615)
+
+Thank You!

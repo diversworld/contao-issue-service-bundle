@@ -1,5 +1,7 @@
 # Verbleibende Integrations- und Anpassungsschritte
 
+> Historischer Planungs-/Prüfstand. Einzelne Aufgaben sind inzwischen umgesetzt. Für den aktuellen Funktionsumfang und die Einrichtung gilt das [Wiki](wiki/Home.md).
+
 ## Paket und Versionsmatrix
 
 - `vendor` und Namespace durch die tatsächliche Organisation ersetzen.

@@ -1,5 +1,7 @@
 # Kompatibilitätsprüfung Contao 5.7 / 6
 
+> Historischer Planungs-/Prüfstand. Einzelne Aufgaben sind inzwischen umgesetzt. Für den aktuellen Funktionsumfang und die Einrichtung gilt das [Wiki](wiki/Home.md).
+
 ## Ergebnis der statischen Prüfung
 
 Status: statisch und in der lokalen DDEV-Integration für Contao 5.7.13 sowie per isolierter Composer-Auflösung für Contao 6.0.0 verifiziert.

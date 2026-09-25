@@ -68,7 +68,7 @@ final class IssueDetailModule extends AbstractFrontendModuleController
         $template->set('issue', $issue);
         $template->set('attachments', $this->issues->attachments((int) $issue['id']));
         $template->set('timeline', $this->issues->publicTimeline((int) $issue['id']));
-        $template->set('commentForm', $this->formFactory->create(CommentType::class, null, $this->getContaoCsrfFormOptions())->createView());
+        $template->set('commentForm', $this->formFactory->create(CommentType::class, null, $this->getContaoCsrfFormOptions() + ['profile_id' => (int) ($issue['profile_id'] ?? 0)])->createView());
 
         $response = $template->getResponse();
         $response->setPrivate();

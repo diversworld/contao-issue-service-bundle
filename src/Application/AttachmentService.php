@@ -17,7 +17,9 @@ final class AttachmentService
     
     public function upload(int $issueId,UploadedFile $file,string $uploaderType,?int $uploaderId,?int $commentId=null,string $directory=''):int
     {
-        $violations = $this->validator->validate($file, $this->constraints->file());
+        $profileId = (int) $this->db->fetchOne('SELECT profile_id FROM tl_issue WHERE id=:id', ['id' => $issueId]);
+        $settings = $this->settings->forProfile($profileId);
+        $violations = $this->validator->validate($file, $this->constraints->forProfile($profileId)->file());
         if (count($violations) > 0) {
             throw new \InvalidArgumentException((string) $violations[0]->getMessage());
         }
@@ -25,7 +27,7 @@ final class AttachmentService
 
         $count=(int)$this->db->fetchOne('SELECT COUNT(*) FROM tl_issue_attachment WHERE issue_id=:i',['i'=>$issueId]);
         
-        if($count>=$this->settings->int('max_files_per_issue',5))
+        if($count>=$settings->int('max_files_per_issue',5))
             throw new \InvalidArgumentException('Maximum attachment count reached.');
         
         if (str_starts_with($directory, 'files:')) {

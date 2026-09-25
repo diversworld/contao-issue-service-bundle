@@ -37,7 +37,7 @@ final class IssueApplicationService
                 
                 $uuid=Uuid::v7();
                 
-                $ticket=$this->numbers->next((string)$service['alias']);
+                $ticket=$this->numbers->next((string)$service['alias'], $c->profileId);
 
                 $now=(new \DateTimeImmutable())->format('Y-m-d H:i:s');
                 
@@ -56,6 +56,7 @@ final class IssueApplicationService
                         'description'=>$c->description,
                         'priority'=>$c->priority,
                         'attachment_directory'=>$c->attachmentDirectory,
+                        'profile_id'=>$c->profileId,
                         'created_at'=>$now,
                         'updated_at'=>$now,
                         'last_public_activity_at'=>$now,

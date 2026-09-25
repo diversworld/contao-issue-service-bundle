@@ -7,3 +7,6 @@ $GLOBALS['TL_LANG']['tl_module']['issue_attachment_folder'] = ['Attachment folde
 
 $GLOBALS['TL_LANG']['tl_module']['issue_attachment_storage'] = ['Attachment storage', 'var: private storage, downloads require ticket permissions. files: access protection depends on whether the selected folder is public. Changes apply to new uploads only.'];
 $GLOBALS['TL_LANG']['tl_module']['issue_attachment_storage_options'] = ['var' => 'Private storage in var (default)', 'files' => 'Folder in files'];
+
+$GLOBALS['TL_LANG']['tl_module']['issue_profile_legend'] = 'Konfigurationsprofil';
+$GLOBALS['TL_LANG']['tl_module']['issue_profile_id'] = ['Konfigurationsprofil', 'Profil für neue Tickets einschließlich Ablage auswählen. Leer: Standardprofil mit bisheriger Modul-Ablage. Bei ausgewähltem Profil gelten dessen Ablageeinstellungen.'];

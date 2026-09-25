@@ -18,13 +18,13 @@ final class CommentType extends AbstractType
     {
         $builder
             ->add('body', TextareaType::class, ['label' => 'Antwort', 'required' => false, 'constraints' => [new Assert\Length(max: 20000)]])
-            ->add('attachments', FileType::class, ['label' => 'Anhänge ergänzen', 'multiple' => true, 'required' => false, 'constraints' => $this->uploads->all(), 'help' => 'Erlaubte Dateitypen: '.implode(', ', $this->uploads->extensions())])
+            ->add('attachments', FileType::class, ['label' => 'Anhänge ergänzen', 'multiple' => true, 'required' => false, 'constraints' => $this->uploads->forProfile($options['profile_id'])->all(), 'help' => 'Erlaubte Dateitypen: '.implode(', ', $this->uploads->forProfile($options['profile_id'])->extensions())])
             ->add('submit', SubmitType::class, ['label' => 'Absenden']);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults(['csrf_protection' => true, 'csrf_token_id' => 'issue_comment',
+        $resolver->setDefaults(['profile_id' => 0, 'csrf_protection' => true, 'csrf_token_id' => 'issue_comment',
             'constraints' => [new Assert\Callback(static function (array $data, \Symfony\Component\Validator\Context\ExecutionContextInterface $context): void {
                 if (trim((string) ($data['body'] ?? '')) === '' && empty($data['attachments'])) {
                     $context->buildViolation('Bitte eine Antwort eingeben oder einen Anhang auswählen.')->atPath('[body]')->addViolation();

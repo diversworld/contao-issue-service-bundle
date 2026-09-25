@@ -30,6 +30,7 @@ final class IssueCreateModule extends AbstractFrontendModuleController
 
     public function __construct(
         private readonly FormFactoryInterface $formFactory,
+        private readonly \Diversworld\ContaoIssueServiceBundle\Application\SettingsService $settings,
         private readonly IssueApplicationService $issues,
         private readonly AttachmentService $attachments,
         private readonly IssueDetailUrlGenerator $detailUrlGenerator,
@@ -52,16 +53,19 @@ final class IssueCreateModule extends AbstractFrontendModuleController
             return $template->getResponse();
         }
 
-        $form = $this->formFactory->create(IssueCreateType::class, null, $this->getContaoCsrfFormOptions());
+        $form = $this->formFactory->create(IssueCreateType::class, null, $this->getContaoCsrfFormOptions() + ['profile_id' => (int) $model->issue_profile_id]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $directory = (string) $model->issue_attachment_directory;
-            if ($model->issue_attachment_storage === 'files') {
-                if (!$model->issue_attachment_folder) {
+            $profile = $model->issue_profile_id ? $this->settings->forProfile((int) $model->issue_profile_id)->profile() : null;
+            $directory = $profile ? (string) $profile['attachment_directory'] : (string) $model->issue_attachment_directory;
+            $storage = $profile ? $profile['attachment_storage'] : $model->issue_attachment_storage;
+            $folder = $profile ? $profile['attachment_folder'] : $model->issue_attachment_folder;
+            if ($storage === 'files') {
+                if (!$folder) {
                     throw new \RuntimeException('Bitte im Erstellungsmodul einen Ablageordner für Anhänge auswählen.');
                 }
-                $uuid = \Contao\StringUtil::binToUuid($model->issue_attachment_folder);
+                $uuid = \Contao\StringUtil::binToUuid($folder);
                 \Diversworld\ContaoIssueServiceBundle\Infrastructure\LocalAttachmentStorage::resolveFolder($uuid);
                 $directory = 'files:'.$uuid;
             }
@@ -76,6 +80,7 @@ final class IssueCreateModule extends AbstractFrontendModuleController
                     trim((string) $data['description']),
                     priority: (string) $data['priority'],
                     attachmentDirectory: $directory,
+                    profileId: (int) $model->issue_profile_id,
                 ),
             );
 

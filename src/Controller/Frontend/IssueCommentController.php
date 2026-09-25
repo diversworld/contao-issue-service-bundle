@@ -31,7 +31,9 @@ final class IssueCommentController extends AbstractController
         
         $this->denyAccessUnlessGranted(IssueVoter::COMMENT,$issue);
         
+        $settings = $settings->forProfile((int) ($issue['profile_id'] ?? 0));
         $f=$this->createForm(CommentType::class, null, [
+            'profile_id' => (int) ($issue['profile_id'] ?? 0),
             'csrf_field_name' => 'REQUEST_TOKEN',
             'csrf_token_manager' => $csrfTokenManager,
             'csrf_token_id' => $this->getParameter('contao.csrf_token_name'),

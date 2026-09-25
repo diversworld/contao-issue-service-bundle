@@ -40,7 +40,7 @@ final class IssueDetailController extends AbstractController
                 'issue'=>$issue,
                 'attachments' => $repo->attachments((int) $issue['id']),
                 'timeline'=>$repo->publicTimeline((int)$issue['id']),
-                'commentForm'=>$this->createForm(CommentType::class, null, ['csrf_field_name' => 'REQUEST_TOKEN', 'csrf_token_manager' => $csrfTokenManager, 'csrf_token_id' => $this->getParameter('contao.csrf_token_name')])->createView()
+                'commentForm'=>$this->createForm(CommentType::class, null, ['profile_id' => (int) ($issue['profile_id'] ?? 0), 'csrf_field_name' => 'REQUEST_TOKEN', 'csrf_token_manager' => $csrfTokenManager, 'csrf_token_id' => $this->getParameter('contao.csrf_token_name')])->createView()
             ]
         );
     } 

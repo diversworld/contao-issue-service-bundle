@@ -48,7 +48,7 @@ $GLOBALS['BE_MOD']['issue_service_management'] = [
     ],
     'issue_service_settings' => [
         'tables'=>[
-            'tl_issue_settings'
+            'tl_issue_profile', 'tl_issue_settings'
         ]
     ],
 ];

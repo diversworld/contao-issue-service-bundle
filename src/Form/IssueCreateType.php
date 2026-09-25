@@ -58,14 +58,14 @@ final class IssueCreateType extends AbstractType
                 'label' => 'Beschreibung',
                 'constraints' => [new Assert\NotBlank(), new Assert\Length(min: 10, max: 50000)],
             ])
-            ->add('attachments', FileType::class, ['label' => 'Anhänge', 'mapped' => false, 'multiple' => true, 'required' => false, 'constraints' => $this->uploads->all(), 'help' => 'Erlaubte Dateitypen: '.implode(', ', $this->uploads->extensions())])
+            ->add('attachments', FileType::class, ['label' => 'Anhänge', 'mapped' => false, 'multiple' => true, 'required' => false, 'constraints' => $this->uploads->forProfile($options['profile_id'])->all(), 'help' => 'Erlaubte Dateitypen: '.implode(', ', $this->uploads->forProfile($options['profile_id'])->extensions())])
             ->add('submit', SubmitType::class, ['label' => 'Issue erstellen']);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'csrf_protection' => true,
+            'profile_id' => 0, 'csrf_protection' => true,
             'csrf_token_id' => 'issue_create',
             'constraints' => [new Assert\Callback(function (array $data, ExecutionContextInterface $context): void {
                 if (isset($data['categoryId'], $data['serviceId']) && !$this->services->categoryBelongsToService((int) $data['categoryId'], (int) $data['serviceId'])) {

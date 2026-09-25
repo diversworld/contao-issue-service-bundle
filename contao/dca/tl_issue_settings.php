@@ -38,7 +38,7 @@ $GLOBALS['TL_DCA']['tl_issue_settings'] = [
 				'show',
 			]
 		],
-	'palettes' => ['default' => '{setting_legend},setting_key,setting_value'],
+	'palettes' => ['default' => '{setting_legend},title,setting_key,setting_value'],
 	'fields' => [
 		'id' => [
 			'sql' => 'int unsigned NOT NULL auto_increment'],
@@ -51,6 +51,12 @@ $GLOBALS['TL_DCA']['tl_issue_settings'] = [
 			'search' => true, 
 			'sql' => "varchar(100) NOT NULL default ''"
 			],
+		'title' => [
+            'inputType' => 'text', 
+            'eval' => ['mandatory' => true, 'maxlength' => 160], 
+            'search' => true, 
+            'sql' => "varchar(160) NOT NULL default ''"
+        ],
 		'value_type' => [
 			'inputType' => 'select', 
 			'options' => ['string', 'bool', 'int', 'json'], 
@@ -69,7 +75,7 @@ $GLOBALS['TL_DCA']['tl_issue_settings'] = [
 			'sql' => 'int unsigned NULL'
 			],
 		'updated_at' => [
-			'sql' => 'datetime NOT NULL'
+			'sql' => 'datetime NULL'
 			],
 		'version' => [
 			'sql' => "int unsigned NOT NULL default 1"

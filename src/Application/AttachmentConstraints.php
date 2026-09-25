@@ -9,6 +9,8 @@ final class AttachmentConstraints
 {
     public function __construct(private readonly SettingsService $settings) {}
 
+    public function forProfile(int $id): self { return new self($this->settings->forProfile($id)); }
+
     public function extensions(): array
     {
         return array_map('strtolower', SettingsList::decode($this->settings->json('allowed_extensions', ['pdf', 'png', 'jpg', 'jpeg'])));

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 $GLOBALS['TL_DCA']['tl_module']['palettes']['issue_service_list'] = '{title_legend},name,headline,type;{redirect_legend},jumpTo;{template_legend:hide},customTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space';
-$GLOBALS['TL_DCA']['tl_module']['palettes']['issue_service_create'] = '{title_legend},name,headline,type;{issue_attachment_legend},issue_attachment_storage;{redirect_legend},jumpTo;{template_legend:hide},customTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space';
+$GLOBALS['TL_DCA']['tl_module']['palettes']['issue_service_create'] = '{title_legend},name,headline,type;{issue_profile_legend},issue_profile_id;{issue_attachment_legend:hide},issue_attachment_storage;{redirect_legend},jumpTo;{template_legend:hide},customTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space';
 $GLOBALS['TL_DCA']['tl_module']['palettes']['issue_service_detail'] = '{title_legend},name,headline,type;{template_legend:hide},customTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space';
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['issue_attachment_directory'] = [
@@ -30,4 +30,10 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['issue_attachment_storage'] = [
     'default' => 'var',
     'eval' => ['submitOnChange' => true, 'tl_class' => 'w50'],
     'sql' => "varchar(8) NOT NULL default 'var'",
+];
+
+$GLOBALS['TL_DCA']['tl_module']['fields']['issue_profile_id'] = [
+    'inputType' => 'select', 'foreignKey' => 'tl_issue_profile.title',
+    'eval' => ['includeBlankOption' => true, 'chosen' => true, 'tl_class' => 'w50'],
+    'sql' => 'int unsigned NOT NULL default 0',
 ];

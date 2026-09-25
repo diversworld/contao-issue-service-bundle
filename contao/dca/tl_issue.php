@@ -52,6 +52,7 @@ $GLOBALS['TL_DCA']['tl_issue'] = [
                       {journal_legend},journal;{time_legend},created_at,updated_at,last_public_activity_at,resolved_at,closed_at',
     ],
     'fields' => [
+        'profile_id' => ['sql' => 'int unsigned NOT NULL default 0'],
         'attachment_directory' => ['sql' => 'varchar(200) NULL'],
         'journal' => [
             'input_field_callback' => [IssueJournalCallbacks::class, 'render'],

@@ -56,11 +56,14 @@ final class IssueCreateModule extends AbstractFrontendModuleController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $directory = $model->issue_attachment_folder
-                ? 'files:'.\Contao\StringUtil::binToUuid($model->issue_attachment_folder)
-                : (string) $model->issue_attachment_directory;
-            if ($model->issue_attachment_folder) {
-                \Diversworld\ContaoIssueServiceBundle\Infrastructure\LocalAttachmentStorage::resolveFolder(substr($directory, 6));
+            $directory = (string) $model->issue_attachment_directory;
+            if ($model->issue_attachment_storage === 'files') {
+                if (!$model->issue_attachment_folder) {
+                    throw new \RuntimeException('Bitte im Erstellungsmodul einen Ablageordner für Anhänge auswählen.');
+                }
+                $uuid = \Contao\StringUtil::binToUuid($model->issue_attachment_folder);
+                \Diversworld\ContaoIssueServiceBundle\Infrastructure\LocalAttachmentStorage::resolveFolder($uuid);
+                $directory = 'files:'.$uuid;
             }
             $data = $form->getData();
             $issue = $this->issues->create(

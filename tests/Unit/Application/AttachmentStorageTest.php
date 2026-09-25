@@ -21,6 +21,11 @@ final class AttachmentStorageTest extends TestCase
         self::assertSame('fileTree', $field['inputType']);
         self::assertFalse($field['eval']['files']);
         self::assertSame('binary(16) NULL', $field['sql']);
+        $dca = $GLOBALS['TL_DCA']['tl_module'];
+        self::assertSame('var', $dca['fields']['issue_attachment_storage']['default']);
+        self::assertSame(['var', 'files'], $dca['fields']['issue_attachment_storage']['options']);
+        self::assertSame('issue_attachment_directory', $dca['subpalettes']['issue_attachment_storage_var']);
+        self::assertSame('issue_attachment_folder', $dca['subpalettes']['issue_attachment_storage_files']);
     }
 
     public function testExistingAndConfiguredStorageKeysRemainResolvable(): void

@@ -46,9 +46,6 @@ final class LocalAttachmentStorage implements AttachmentStorageInterface
         if (!$folder || $folder->type !== 'folder' || !str_starts_with($folder->path, 'files/')) {
             throw new \InvalidArgumentException('Bitte einen vorhandenen Ordner unter files auswählen.');
         }
-        if ((new \Contao\Folder($folder->path))->isUnprotected()) {
-            throw new \InvalidArgumentException('Bitte einen geschützten Ordner für Ticket-Anhänge auswählen.');
-        }
         $root = \Contao\System::getContainer()->getParameter('kernel.project_dir');
         $path = realpath($root.'/'.$folder->path);
         $files = realpath($root.'/files');

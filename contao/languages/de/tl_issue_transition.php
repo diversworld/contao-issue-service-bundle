@@ -23,3 +23,7 @@ $GLOBALS['TL_LANG']['tl_issue_transition']['statuses'] = ['Status verwalten', 'D
 $GLOBALS['TL_LANG']['tl_issue_transition']['conditions_legend'] = 'Bedingungen';
 
 $GLOBALS['TL_LANG']['tl_issue_transition']['publish_legend'] = 'Aktivierung';
+
+$GLOBALS['TL_LANG']['tl_issue_transition']['sameStatus'] = 'Ausgangsstatus und Zielstatus müssen unterschiedlich sein.';
+
+$GLOBALS['TL_LANG']['tl_issue_transition']['duplicateRule'] = 'Für diesen Ausgangsstatus, Zielstatus und diese Rolle besteht bereits eine Regel.';

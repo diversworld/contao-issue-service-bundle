@@ -23,3 +23,7 @@ $GLOBALS['TL_LANG']['tl_issue_transition']['statuses'] = ['Manage statuses', 'Ed
 $GLOBALS['TL_LANG']['tl_issue_transition']['conditions_legend'] = 'Conditions';
 
 $GLOBALS['TL_LANG']['tl_issue_transition']['publish_legend'] = 'Activation';
+
+$GLOBALS['TL_LANG']['tl_issue_transition']['sameStatus'] = 'Source and target status must be different.';
+
+$GLOBALS['TL_LANG']['tl_issue_transition']['duplicateRule'] = 'A rule already exists for this source status, target status and role.';

@@ -6,7 +6,6 @@ namespace Diversworld\ContaoIssueServiceBundle\Backend;
 
 use Contao\BackendModule;
 use Contao\DataContainer;
-use Contao\Environment;
 use Contao\StringUtil;
 use Contao\System;
 use Diversworld\ContaoIssueServiceBundle\Application\SettingsService;
@@ -107,11 +106,18 @@ final class IssueDashboardModule extends BackendModule
         $html = '<h3>Letzte Issues</h3><table class="tl_listing showColumns"><thead><tr><th>Ticket</th><th>Titel</th><th>Service</th><th>Status</th><th>Priorität</th><th>Aktualisiert</th></tr></thead><tbody>';
 
         foreach ($issues as $index => $issue) {
-            $href = Environment::get('base').Environment::get('script').'?do=issue_service_issues&amp;table=tl_issue&amp;act=edit&amp;id='.(int) $issue['id'];
+            $container = System::getContainer();
+            $href = $container->get('router')->generate('contao_backend', [
+                'do' => 'issue_service_issues',
+                'table' => 'tl_issue',
+                'act' => 'edit',
+                'id' => (int) $issue['id'],
+                'rt' => $container->get('contao.csrf.token_manager')->getDefaultTokenValue(),
+            ]);
             $html .= sprintf(
                 '<tr class="%s"><td><a href="%s">%s</a></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>',
                 0 === $index % 2 ? 'even' : 'odd',
-                $href,
+                StringUtil::specialchars($href),
                 StringUtil::specialchars((string) ($issue['ticket_number'] ?? '')),
                 StringUtil::specialchars((string) $issue['title']),
                 StringUtil::specialchars((string) $issue['service_title']),

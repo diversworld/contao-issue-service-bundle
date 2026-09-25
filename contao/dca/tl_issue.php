@@ -27,8 +27,7 @@ $GLOBALS['TL_DCA']['tl_issue'] = [
     'list' => [
         'sorting' => [
             'mode' => DataContainer::MODE_SORTED,
-            'fields' => [
-        'journal' => ['input_field_callback' => [\Diversworld\ContaoIssueServiceBundle\EventListener\DataContainer\IssueJournalCallbacks::class, 'render']],'last_public_activity_at DESC'],
+            'fields' => ['last_public_activity_at DESC'],
             'flag' => DataContainer::SORT_DAY_DESC,
             'panelLayout' => 'filter;search,limit',
         ],
@@ -52,6 +51,9 @@ $GLOBALS['TL_DCA']['tl_issue'] = [
                       {journal_legend},journal;{time_legend},created_at,updated_at,last_public_activity_at,resolved_at,closed_at',
     ],
     'fields' => [
+        'journal' => [
+            'input_field_callback' => [\Diversworld\ContaoIssueServiceBundle\EventListener\DataContainer\IssueJournalCallbacks::class, 'render'],
+        ],
         'id' => [
             'sql' => 'bigint unsigned NOT NULL auto_increment'
         ],

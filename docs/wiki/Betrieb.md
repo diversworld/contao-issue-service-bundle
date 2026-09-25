@@ -15,6 +15,8 @@ Datenbank sowie die verwendete Ablage in `var` und/oder `files` zusammen sichern
 | `Version121WorkflowDrafts` | Kopierbare Workflowentwürfe ohne Zielstatus |
 | `Version122ExampleWorkflow` | 23 fehlende Beispielregeln ergänzen |
 | `Version123NotificationPreferences` | Benachrichtigungsschalter an Profilen, Benutzern und Mitgliedern |
+| `Version124ServiceDefaults` | Fehlende Standardwerte für Titel und Alias bei der Serviceanlage |
+| `Version125CategoryDefaults` | Fehlende Standardwerte für Service, Titel und Alias bei der Kategorieanlage |
 
 Gelöschte Beispielregeln werden beim nächsten passenden Migrationslauf wieder ergänzt. Regeln deshalb deaktivieren, wenn sie dauerhaft nicht verwendet werden sollen.
 

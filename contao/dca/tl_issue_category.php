@@ -68,13 +68,13 @@ $GLOBALS['TL_DCA']['tl_issue_category'] = [
             'inputType' => 'text', 
             'eval' => ['mandatory' => true, 'maxlength' => 160], 
             'search' => true, 
-            'sql' => "varchar(160) NOT NULL default ''"
+            'sql' => "varchar(255) NOT NULL default ''"
         ],
         'alias' => [
             'inputType' => 'text', 
-            'eval' => ['mandatory' => true, 'maxlength' => 160, 'rgxp' => 'alias', 'doNotCopy' => true], 
+            'eval' => ['mandatory' => false, 'maxlength' => 160, 'rgxp' => 'alias', 'doNotCopy' => true], 
             'search' => true, 
-            'sql' => "varchar(160) NOT NULL default ''"
+            'sql' => "varchar(255) NOT NULL default ''"
         ],
         'description' => [
             'inputType' => 'textarea',

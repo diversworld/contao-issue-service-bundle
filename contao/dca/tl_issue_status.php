@@ -57,7 +57,7 @@ $GLOBALS['TL_DCA']['tl_issue_status'] = [
 		],
 		'status_key' => [
 			'inputType' => 'text', 
-			'eval' => ['mandatory' => true, 'maxlength' => 32, 'rgxp' => 'alias', 'doNotCopy' => true], 
+			'eval' => ['mandatory' => false, 'maxlength' => 32, 'rgxp' => 'alias', 'doNotCopy' => true], 
 			'search' => true, 
 			'sql' => "varchar(32) NOT NULL default ''"
 		],

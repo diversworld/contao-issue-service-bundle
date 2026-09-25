@@ -27,7 +27,7 @@ $GLOBALS['TL_DCA']['tl_issue_profile'] = [
             'inputType' => 'text', 
             'eval' => ['mandatory' => true, 'maxlength' => 160, 'tl_class' => 'w50'], 
             'search' => true, 
-            'sql' => "varchar(160) NOT NULL default ''"
+            'sql' => "varchar(255) NOT NULL default ''"
         ],
         'description' => [
             'inputType' => 'textarea', 

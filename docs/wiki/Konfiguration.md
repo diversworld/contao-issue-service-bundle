@@ -29,3 +29,9 @@ Unter **Service Management → Konfigurationsprofile** wird jede Konfiguration a
 Ein explizit ausgewähltes Profil hat bei der Anhangsablage Vorrang vor den Ablagefeldern des Erstellungsmoduls. Ohne explizite Profilwahl nutzt das Modul seine Ablagefelder; die übrigen Einstellungen fallen auf das Standardprofil zurück. Deshalb für nachvollziehbare Konfigurationen immer ein Profil auswählen. Als Standardprofil dient der erste Profildatensatz; alte Schlüssel-Wert-Einstellungen werden als Fallback unterstützt.
 
 Mehrere Profile eignen sich für unterschiedliche Aufgaben und Organisationseinheiten. Sie isolieren jedoch weder Stammdaten noch Backend-Ticketlisten als getrennte Mandanten. Workflowregeln gelten profilübergreifend.
+
+## Automatische Aliasse
+
+Bei Services und Kategorien kann das Aliasfeld leer bleiben; beim Speichern wird es aus dem Titel erzeugt. Service-Aliasse sind global eindeutig, Kategorie-Aliasse innerhalb ihres Services. Bei automatisch erzeugten Duplikaten ergänzt Contao eine Nummer. Manuell gesetzte Aliasse bleiben erhalten und werden auf Eindeutigkeit geprüft. Beim Kopieren wird ein neuer Alias erzeugt.
+
+Auch ein leerer Statusschlüssel wird aus dem Titel erzeugt. Bestehende Schlüssel werden nicht automatisch geändert. Die Standardstatusschlüssel wie `new`, `resolved` und `closed` beibehalten, da Anwendungslogik und Beispielmigrationen sie verwenden. Tickets selbst haben kein Aliasfeld; sie werden über UUID und Ticketnummer identifiziert.

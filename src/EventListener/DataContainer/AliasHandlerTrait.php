@@ -7,6 +7,7 @@ namespace Diversworld\ContaoIssueServiceBundle\EventListener\DataContainer;
 use Contao\CoreBundle\Slug\Slug;
 use Contao\DataContainer;
 use Contao\DC_Table;
+use Contao\Input;
 use Doctrine\DBAL\Connection;
 
 trait AliasHandlerTrait
@@ -63,6 +64,15 @@ trait AliasHandlerTrait
     ): mixed
     {
         $activeRecord = $dc instanceof DC_Table ? $dc->getActiveRecord() : $dc->getCurrentRecord();
+        $activeRecord ??= [];
+        // The title may follow the alias field in the palette (e.g. status_key).
+        if (Input::post('FORM_SUBMIT') === $table) {
+            foreach (array_merge([$titleField], $scopeFields) as $field) {
+                $submitted = Input::post($field);
+                if (is_scalar($submitted)) $activeRecord[$field] = $submitted;
+            }
+        }
+
 
         $aliasExists = function (string $alias) use ($db, $dc, $table, $aliasField, $scopeFields, $activeRecord): bool {
             $conditions = ["$aliasField=?", 'id!=?'];

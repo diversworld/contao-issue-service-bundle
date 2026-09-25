@@ -20,7 +20,7 @@ class IssueListener
     {
     }
 
-    #[AsCallback(table: 'tl_issue', target: 'fields.alias.save')]
+    // Tickets have no alias column; do not register this legacy helper as a DCA callback.
     public function generateAlias(mixed $varValue, DataContainer $dc): mixed
     {
         return $this->generateAliasWithValidation($this->db, $this->slug, $varValue, $dc, 'tl_issue');

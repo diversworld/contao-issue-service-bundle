@@ -1,7 +1,7 @@
 .issue-service {
     display: grid;
     gap: 1.25rem;
-    max-width: 70rem;
+    max-width: 88rem;
 }
 
 .issue-service__header,
@@ -10,7 +10,7 @@
 .issue-service__table-wrap,
 .issue-service__form {
     border: 1px solid rgba(0, 0, 0, .12);
-    border-radius: .5rem;
+    border-radius: 2rem;
     background: rgba(255, 255, 255, .96);
     box-shadow: 0 .25rem 1rem rgba(0, 0, 0, .06);
 }
@@ -71,6 +71,10 @@
 
 .issue-service__definition-list dd {
     margin: 0;
+}
+
+.issue-service-list {
+    margin-top: 2rem;
 }
 
 .issue-service__timeline {

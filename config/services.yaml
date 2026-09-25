@@ -1,6 +1,7 @@
 parameters:
   contao_issue_service.storage_dir: '%kernel.project_dir%/var/issue-attachments'
-  contao_issue_service.mail_from: 'no-reply@example.invalid'
+  # Empty: use the Contao administrator email; may be overridden per installation.
+  contao_issue_service.mail_from: ''
 
 services:
   _defaults:

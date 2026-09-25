@@ -22,7 +22,7 @@
                     <dt>Status</dt>
                     <dd>{{ issue.status_title }}</dd>
                     <dt>Beschreibung</dt>
-                    <dd>{{ issue.description|nl2br }}</dd>
+                    <dd>{{ issue.description|striptags|nl2br }}</dd>
                 </dl>
             {% endblock %}
             {% block attachment %}

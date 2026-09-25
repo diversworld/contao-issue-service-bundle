@@ -8,6 +8,7 @@ use Contao\BackendUser;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsCallback;
 use Contao\DataContainer;
 use Diversworld\ContaoIssueServiceBundle\Application\CommentService;
+use Diversworld\ContaoIssueServiceBundle\Application\NotificationService;
 use Diversworld\ContaoIssueServiceBundle\Repository\IssueRepository;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -21,6 +22,7 @@ final class IssueJournalCallbacks
         private readonly IssueRepository $issues,
         private readonly CommentService $comments,
         private readonly RequestStack $requests,
+        private readonly NotificationService $notifications,
         private readonly \Symfony\Component\Routing\Generator\UrlGeneratorInterface $router,
     ) {
     }
@@ -80,6 +82,9 @@ final class IssueJournalCallbacks
                         'old_value' => json_encode([$field => $before[$field]], JSON_THROW_ON_ERROR),
                         'new_value' => json_encode([$field => $after[$field]], JSON_THROW_ON_ERROR), 'created_at' => $now,
                     ]);
+                    if ($field === 'assigned_user_id') {
+                        $this->notifications->enqueue($id, 'assignment_changed');
+                    }
                     $publicChange = $publicChange || in_array($field, ['status_id', 'priority'], true);
                 }
 

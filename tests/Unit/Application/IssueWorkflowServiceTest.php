@@ -28,7 +28,7 @@ final class IssueWorkflowServiceTest extends TestCase
     {
         $this->real = DriverManager::getConnection(['driver' => 'pdo_sqlite', 'memory' => true]);
         foreach ([
-            'tl_issue' => 'id INTEGER PRIMARY KEY, status_id INTEGER, service_id INTEGER, profile_id INTEGER, member_id INTEGER, version INTEGER, ticket_number TEXT, title TEXT, tstamp INTEGER, updated_at TEXT, last_public_activity_at TEXT, resolved_at TEXT, closed_at TEXT, deleted_at TEXT',
+            'tl_issue' => 'id INTEGER PRIMARY KEY, status_id INTEGER, service_id INTEGER, profile_id INTEGER, assigned_user_id INTEGER, member_id INTEGER, version INTEGER, ticket_number TEXT, title TEXT, tstamp INTEGER, updated_at TEXT, last_public_activity_at TEXT, resolved_at TEXT, closed_at TEXT, deleted_at TEXT',
             'tl_issue_status' => 'id INTEGER PRIMARY KEY, title TEXT, sort_order INTEGER DEFAULT 0, published INTEGER DEFAULT 1, is_closed INTEGER DEFAULT 0, is_resolved INTEGER DEFAULT 0',
             'tl_issue_transition' => 'from_status_id INTEGER, to_status_id INTEGER, role_key TEXT, require_public_comment INTEGER DEFAULT 0, published INTEGER DEFAULT 1',
             'tl_issue_history' => 'id INTEGER PRIMARY KEY, issue_id INTEGER, event_type TEXT, actor_type TEXT, actor_id INTEGER, old_value TEXT, new_value TEXT, created_at TEXT',

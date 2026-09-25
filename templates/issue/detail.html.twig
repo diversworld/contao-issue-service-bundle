@@ -2,12 +2,12 @@
     <h1>{{ issue.ticket_number }} - {{ issue.title }}</h1>
 
     <dl>
-        <dt>Service xx</dt>
+        <dt>Service</dt>
         <dd>{{ issue.service_title }}</dd>
         <dt>Status</dt>
         <dd>{{ issue.status_title }}</dd>
         <dt>Beschreibung</dt>
-        <dd>{{ issue.description|nl2br }}</dd>
+        <dd>{{ issue.description|striptags|nl2br }}</dd>
     </dl>
 
 <section class="issue-service__section">

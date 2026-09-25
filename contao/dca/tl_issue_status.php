@@ -15,6 +15,7 @@ $GLOBALS['TL_DCA']['tl_issue_status'] = [
             'label' => &$GLOBALS['TL_LANG']['tl_issue_status']['transitions'],
             'href' => 'table=tl_issue_transition',
             'icon' => 'redirect.svg',
+			'primary' => true
         ],
     ],
 	'operations' => [

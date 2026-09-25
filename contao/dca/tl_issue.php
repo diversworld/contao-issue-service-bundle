@@ -80,7 +80,7 @@ $GLOBALS['TL_DCA']['tl_issue'] = [
         'service_id' => [
             'inputType' => 'select',
             'foreignKey' => 'tl_issue_service.title',
-            'eval' => ['mandatory' => true, 'chosen' => true, 'tl_class' => 'w25'],
+            'eval' => ['mandatory' => true, 'submitOnChange' => true, 'chosen' => true, 'tl_class' => 'w25'],
             'filter' => true,
             'relation' => ['type' => 'hasOne', 'load' => 'eager'],
             'sql' => "int unsigned NOT NULL default 0",
@@ -88,7 +88,7 @@ $GLOBALS['TL_DCA']['tl_issue'] = [
         'category_id' => [
             'inputType' => 'select',
             'foreignKey' => 'tl_issue_category.title',
-            'eval' => ['includeBlankOption' => true, 'chosen' => true, 'tl_class' => 'w25'],
+            'eval' => ['includeBlankOption' => true, 'isAssociative' => true, 'chosen' => true, 'tl_class' => 'w25'],
             'filter' => true,
             'relation' => ['type' => 'hasOne', 'load' => 'eager'],
             'sql' => 'int unsigned NULL',

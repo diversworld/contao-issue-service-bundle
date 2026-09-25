@@ -22,3 +22,9 @@ $GLOBALS['TL_LANG']['tl_issue_profile']['policy_legend'] = 'Weitere Parameter';
 $GLOBALS['TL_LANG']['tl_issue_profile']['new'] = ['Neues Profil', 'Eine vollständige Konfiguration anlegen.'];
 
 $GLOBALS['TL_LANG']['tl_issue_profile']['attachment_storage_options'] = ['var' => 'Private Ablage in var', 'files' => 'Ordner unter files'];
+
+$GLOBALS['TL_LANG']['tl_issue_profile']['issue_notifications_legend'] = 'Ticket notifications';
+$GLOBALS['TL_LANG']['tl_issue_profile']['issue_notify_issue_created'] = ['Ticket creation', 'Enable email notifications for this event.'];
+$GLOBALS['TL_LANG']['tl_issue_profile']['issue_notify_assignment_changed'] = ['Assignment', 'Enable email notifications for this event.'];
+$GLOBALS['TL_LANG']['tl_issue_profile']['issue_notify_status_changed'] = ['Status change', 'Enable email notifications for this event.'];
+$GLOBALS['TL_LANG']['tl_issue_profile']['issue_notify_public_comment_added'] = ['Public reply', 'Enable email notifications for this event.'];

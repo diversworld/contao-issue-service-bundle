@@ -36,6 +36,8 @@ final class IssueWorkflowServiceTest extends TestCase
             'tl_issue_notification' => 'id INTEGER PRIMARY KEY, event_uuid BLOB, issue_id INTEGER, recipient TEXT, template_key TEXT, status TEXT, attempt_count INTEGER, created_at TEXT',
             'tl_issue_service' => 'id INTEGER PRIMARY KEY, notification_recipients TEXT',
             'tl_issue_profile' => 'id INTEGER PRIMARY KEY, reopen_roles TEXT, service_scoped_permissions TEXT, mail_recipients TEXT',
+            'tl_user' => 'id INTEGER PRIMARY KEY, email TEXT',
+            'tl_member' => 'id INTEGER PRIMARY KEY, email TEXT',
             'tl_user_group' => 'id INTEGER PRIMARY KEY, issue_workflow_role TEXT, issue_workflow_services TEXT, disable TEXT, start TEXT, stop TEXT',
             'tl_issue_service_group' => 'user_group_id INTEGER, service_id INTEGER, role_key TEXT',
         ] as $table => $columns) $this->real->executeStatement('CREATE TABLE '.$table.' ('.$columns.')');

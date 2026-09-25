@@ -23,19 +23,40 @@ final class NotificationService
 
     public function hasQueuedNotifications(): bool { return $this->queued; }
 
-    public function enqueue(int $issueId, string $template): void
+    /** Re-evaluated before delivery so opting out also affects queued messages. */
+    private function recipients(int $issueId, string $template): array
     {
-        $issue = $this->db->fetchAssociative('SELECT i.ticket_number,i.title,i.profile_id,i.assigned_user_id,s.notification_recipients FROM tl_issue i JOIN tl_issue_service s ON s.id=i.service_id WHERE i.id=:id', ['id' => $issueId]);
-        if (!$issue) return;
-        $recipients = $this->settings->forProfile((int) ($issue['profile_id'] ?? 0))->json('mail_recipients', []);
+        if (!in_array($template, ['issue_created', 'assignment_changed', 'status_changed', 'public_comment_added'], true)) return [];
+        $field = 'issue_notify_'.$template;
+        $issue = $this->db->fetchAssociative('SELECT i.*,s.notification_recipients FROM tl_issue i JOIN tl_issue_service s ON s.id=i.service_id WHERE i.id=:id', ['id' => $issueId]);
+        if (!$issue) return [];
+        $settings = $this->settings->forProfile((int) ($issue['profile_id'] ?? 0));
+        if (!$settings->bool($field, true)) return [];
+        $recipients = $settings->json('mail_recipients', []);
         foreach (SettingsList::decode($issue['notification_recipients']) as $entry) {
             array_push($recipients, ...preg_split('/[\r\n,;]+/', $entry));
         }
-        if (in_array($template, ['issue_created', 'assignment_changed'], true) && !empty($issue['assigned_user_id'])) {
+        if (!empty($issue['assigned_user_id'])) {
             $email = $this->db->fetchOne('SELECT email FROM tl_user WHERE id=?', [(int) $issue['assigned_user_id']]);
             if ($email) $recipients[] = $email;
         }
+        $owner = !empty($issue['member_id']) ? $this->db->fetchAssociative('SELECT * FROM tl_member WHERE id=?', [(int) $issue['member_id']]) : false;
+        if ($owner && !empty($owner[$field]) && !empty($owner['email'])) $recipients[] = $owner['email'];
         $recipients = array_unique(array_map(static fn ($email): string => strtolower(trim((string) $email)), $recipients));
+        return array_values(array_filter($recipients, function (string $email) use ($owner, $field): bool {
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return false;
+            // Explicit personal opt-outs take precedence even over configured recipients.
+            foreach ($this->db->fetchAllAssociative('SELECT * FROM tl_user WHERE LOWER(email)=?', [$email]) as $user) {
+                if (array_key_exists($field, $user) && empty($user[$field])) return false;
+            }
+            if ($owner && strtolower(trim((string) $owner['email'])) === $email && empty($owner[$field])) return false;
+            return true;
+        }));
+    }
+
+    public function enqueue(int $issueId, string $template): void
+    {
+        $recipients = $this->recipients($issueId, $template);
         $event = Uuid::v7()->toBinary();
         foreach ($recipients as $recipient) {
             if (!filter_var($recipient, FILTER_VALIDATE_EMAIL)) continue;
@@ -60,6 +81,10 @@ final class NotificationService
             foreach ($rows as $row) {
                 $lock?->refresh();
                 try {
+                    if (!in_array(strtolower(trim($row['recipient'])), $this->recipients((int) $row['issue_id'], $row['template_key']), true)) {
+                        $this->db->update('tl_issue_notification', ['status' => 'skipped', 'last_error' => null, 'next_attempt_at' => null], ['id' => $row['id']]);
+                        continue;
+                    }
                     $activity = match ($row['template_key']) {
                         'issue_created' => 'Ein neues Ticket wurde erstellt.',
                         'assignment_changed' => 'Die Bearbeiterzuweisung des Tickets wurde geändert.',

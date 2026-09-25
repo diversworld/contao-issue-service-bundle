@@ -14,7 +14,7 @@ $GLOBALS['TL_DCA']['tl_issue_profile'] = [
         'operations' => ['edit', 'copy', 'show'],
     ],
     'palettes' => [
-        'default' => '{title_legend},title,description;{ticket_legend},ticket_pattern,require_login;{upload_legend},allowed_extensions,max_file_size,max_files_per_issue,attachment_storage,attachment_directory,attachment_folder;{notification_legend},mail_recipients;{policy_legend},retention_days,reopen_roles,service_scoped_permissions',
+        'default' => '{title_legend},title,description;{ticket_legend},ticket_pattern,require_login;{upload_legend},allowed_extensions,max_file_size,max_files_per_issue,attachment_storage,attachment_directory,attachment_folder;{notification_legend},mail_recipients,issue_notify_issue_created,issue_notify_assignment_changed,issue_notify_status_changed,issue_notify_public_comment_added;{policy_legend},retention_days,reopen_roles,service_scoped_permissions',
     ],
     'fields' => [
         'id' => [
@@ -108,4 +108,28 @@ $GLOBALS['TL_DCA']['tl_issue_profile'] = [
             'sql' => "char(1) NOT NULL default '1'"
         ],
     ],
+];
+
+$GLOBALS['TL_DCA']['tl_issue_profile']['fields']['issue_notify_issue_created'] = [
+    'inputType' => 'checkbox', 'default' => '1',
+    'eval' => ['tl_class' => 'clr'],
+    'sql' => "char(1) NOT NULL default '1'",
+];
+
+$GLOBALS['TL_DCA']['tl_issue_profile']['fields']['issue_notify_assignment_changed'] = [
+    'inputType' => 'checkbox', 'default' => '1',
+    'eval' => ['tl_class' => 'clr'],
+    'sql' => "char(1) NOT NULL default '1'",
+];
+
+$GLOBALS['TL_DCA']['tl_issue_profile']['fields']['issue_notify_status_changed'] = [
+    'inputType' => 'checkbox', 'default' => '1',
+    'eval' => ['tl_class' => 'clr'],
+    'sql' => "char(1) NOT NULL default '1'",
+];
+
+$GLOBALS['TL_DCA']['tl_issue_profile']['fields']['issue_notify_public_comment_added'] = [
+    'inputType' => 'checkbox', 'default' => '1',
+    'eval' => ['tl_class' => 'clr'],
+    'sql' => "char(1) NOT NULL default '1'",
 ];

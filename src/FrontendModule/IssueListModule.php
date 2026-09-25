@@ -6,15 +6,13 @@ namespace Diversworld\ContaoIssueServiceBundle\FrontendModule;
 
 use Contao\CoreBundle\Controller\FrontendModule\AbstractFrontendModuleController;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsFrontendModule;
-use Contao\CoreBundle\Routing\ContentUrlGenerator;
 use Contao\CoreBundle\Twig\FragmentTemplate;
 use Contao\FrontendUser;
 use Contao\ModuleModel;
-use Contao\PageModel;
 use Doctrine\DBAL\Connection;
+use Diversworld\ContaoIssueServiceBundle\Routing\IssueDetailUrlGenerator;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[AsFrontendModule(IssueListModule::TYPE, category: 'issue_service', template: 'frontend_module/issue_service_list')]
 final class IssueListModule extends AbstractFrontendModuleController
@@ -27,8 +25,7 @@ final class IssueListModule extends AbstractFrontendModuleController
 
     public function __construct(
         private readonly Connection $connection,
-        private readonly ContentUrlGenerator $contentUrlGenerator,
-        private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly IssueDetailUrlGenerator $detailUrlGenerator,
     ) {
     }
 
@@ -70,13 +67,7 @@ final class IssueListModule extends AbstractFrontendModuleController
 
     private function generateDetailUrl(string $uuid, ModuleModel $model): string
     {
-        $page = PageModel::findByPk((int) $model->jumpTo);
-
-        if (null !== $page) {
-            return $this->contentUrlGenerator->generate($page, ['uuid' => $uuid]);
-        }
-
-        return $this->urlGenerator->generate('issue_service_detail', ['uuid' => $uuid]);
+        return $this->detailUrlGenerator->generate($uuid, $model);
     }
 }
     

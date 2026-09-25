@@ -13,6 +13,7 @@ final readonly class CreateIssueCommand
         public string $type, 
         public string $title, 
         public string $description, 
-        public ?string $guestAccessHash=null) 
+        public ?string $guestAccessHash=null,
+        public string $priority='normal')
     {} 
 }

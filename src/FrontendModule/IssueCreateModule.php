@@ -7,21 +7,19 @@ namespace Diversworld\ContaoIssueServiceBundle\FrontendModule;
 use Contao\CoreBundle\Controller\FrontendModule\AbstractFrontendModuleController;
 use Contao\CoreBundle\Csrf\ContaoCsrfTokenManager;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsFrontendModule;
-use Contao\CoreBundle\Routing\ContentUrlGenerator;
 use Contao\CoreBundle\Twig\FragmentTemplate;
 use Contao\FrontendUser;
 use Contao\ModuleModel;
-use Contao\PageModel;
 use Diversworld\ContaoIssueServiceBundle\Application\AttachmentService;
 use Diversworld\ContaoIssueServiceBundle\Application\IssueApplicationService;
 use Diversworld\ContaoIssueServiceBundle\Domain\Dto\CreateIssueCommand;
 use Diversworld\ContaoIssueServiceBundle\Form\IssueCreateType;
+use Diversworld\ContaoIssueServiceBundle\Routing\IssueDetailUrlGenerator;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[AsFrontendModule(IssueCreateModule::TYPE, category: 'issue_service', template: 'frontend_module/issue_service_create')]
 final class IssueCreateModule extends AbstractFrontendModuleController
@@ -34,11 +32,10 @@ final class IssueCreateModule extends AbstractFrontendModuleController
         private readonly FormFactoryInterface $formFactory,
         private readonly IssueApplicationService $issues,
         private readonly AttachmentService $attachments,
-        private readonly ContentUrlGenerator $contentUrlGenerator,
+        private readonly IssueDetailUrlGenerator $detailUrlGenerator,
         private readonly ContaoCsrfTokenManager $csrfTokenManager,
         #[Autowire(param: 'contao.csrf_token_name')]
         private readonly string $csrfTokenName,
-        private readonly UrlGeneratorInterface $urlGenerator,
     ) {
     }
 
@@ -68,6 +65,7 @@ final class IssueCreateModule extends AbstractFrontendModuleController
                     (string) $data['type'],
                     trim((string) $data['title']),
                     trim((string) $data['description']),
+                    priority: (string) $data['priority'],
                 ),
             );
 
@@ -91,13 +89,7 @@ final class IssueCreateModule extends AbstractFrontendModuleController
 
     private function generateDetailUrl(string $uuid, ModuleModel $model): string
     {
-        $page = PageModel::findByPk((int) $model->jumpTo);
-
-        if (null !== $page) {
-            return $this->contentUrlGenerator->generate($page, ['uuid' => $uuid]);
-        }
-
-        return $this->urlGenerator->generate('issue_service_detail', ['uuid' => $uuid]);
+        return $this->detailUrlGenerator->generate($uuid, $model);
     }
 
     /** @return array{csrf_field_name: string, csrf_token_manager: ContaoCsrfTokenManager, csrf_token_id: string} */

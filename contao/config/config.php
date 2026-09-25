@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/contaoissueservice/js/issue-create.js|static';
+
+$GLOBALS['TL_CSS'][] = 'bundles/contaoissueservice/css/issue-service.css|static';
+
 use Diversworld\ContaoIssueServiceBundle\Model\IssueModel;
 use Diversworld\ContaoIssueServiceBundle\Model\IssueServiceModel;
 use Diversworld\ContaoIssueServiceBundle\Model\IssueCategoryModel;

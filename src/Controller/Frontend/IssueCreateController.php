@@ -37,7 +37,8 @@ final class IssueCreateController extends AbstractController
                     $d['categoryId']? (int)$d['categoryId']:null,
                     (string)$d['type'],
                     trim((string)$d['title']),
-                    trim((string)$d['description'])
+                    trim((string)$d['description']),
+                    priority: (string)$d['priority']
                 )
             );
                 

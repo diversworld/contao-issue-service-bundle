@@ -3,10 +3,19 @@
 {% block content %}
     <div class="issue-service issue-service-create">
         {% if loginRequired %}
-            <p class="empty">{{ loginRequiredMessage }}</p>
+            <p class="issue-service__empty">{{ loginRequiredMessage }}</p>
         {% else %}
-            {{ form_start(form, {action: action}) }}
-                {{ form_widget(form) }}
+            {{ form_start(form, {action: action, attr: {class: 'issue-service__form'}}) }}
+                {{ form_errors(form) }}
+                {{ form_row(form.serviceId) }}
+                {{ form_row(form.categoryId) }}
+                {{ form_row(form.type) }}
+                {{ form_row(form.priority) }}
+                <p class="issue-service__status">Status: Neu</p>
+                {{ form_row(form.title) }}
+                {{ form_row(form.description) }}
+                {{ form_row(form.attachments) }}
+                {{ form_row(form.submit) }}
             {{ form_end(form) }}
         {% endif %}
     </div>

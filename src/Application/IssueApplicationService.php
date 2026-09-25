@@ -30,10 +30,10 @@ final class IssueApplicationService
                 if(false===$service)
                     throw new \InvalidArgumentException('Unknown service.');
                 
-                $status=(int)$db->fetchOne('SELECT id FROM tl_issue_status WHERE is_initial=1 AND published=1 ORDER BY sort_order LIMIT 1');
+                $status=(int)$db->fetchOne('SELECT id FROM tl_issue_status WHERE status_key=:status AND published=1', ['status' => 'new']);
                 
                 if(!$status)
-                    throw new \RuntimeException('Initial status is missing.');
+                    throw new \RuntimeException('Published status new is missing.');
                 
                 $uuid=Uuid::v7();
                 
@@ -54,7 +54,7 @@ final class IssueApplicationService
                         'issue_type'=>$c->type,
                         'title'=>$c->title,
                         'description'=>$c->description,
-                        'priority'=>'normal',
+                        'priority'=>$c->priority,
                         'created_at'=>$now,
                         'updated_at'=>$now,
                         'last_public_activity_at'=>$now,

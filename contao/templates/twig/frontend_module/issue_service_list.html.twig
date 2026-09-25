@@ -3,11 +3,12 @@
 {% block content %}
     <div class="issue-service issue-service-list">
         {% if loginRequired %}
-            <p class="empty">{{ loginRequiredMessage }}</p>
+            <p class="issue-service__empty">{{ loginRequiredMessage }}</p>
         {% elseif issues is empty %}
-            <p class="empty">{{ emptyMessage }}</p>
+            <p class="issue-service__empty">{{ emptyMessage }}</p>
         {% else %}
-            <table>
+            <div class="issue-service__table-wrap">
+            <table class="issue-service__table">
                 <thead>
                     <tr>
                         <th>Ticket</th>
@@ -20,15 +21,16 @@
                 <tbody>
                     {% for issue in issues %}
                         <tr>
-                            <td><a href="{{ issue.detail_url }}">{{ issue.ticket_number }}</a></td>
-                            <td>{{ issue.title }}</td>
+                            <td><a class="issue-service__ticket-link" href="{{ issue.detail_url }}">{{ issue.ticket_number }}</a></td>
+                            <td class="issue-service__title">{{ issue.title }}</td>
                             <td>{{ issue.service_title }}</td>
-                            <td>{{ issue.status_title }}</td>
+                            <td><span class="issue-service__badge">{{ issue.status_title }}</span></td>
                             <td>{{ issue.last_public_activity_at }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            </div>
         {% endif %}
     </div>
 {% endblock %}

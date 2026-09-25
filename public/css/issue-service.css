@@ -1,0 +1,171 @@
+.issue-service {
+    display: grid;
+    gap: 1.25rem;
+    max-width: 70rem;
+}
+
+.issue-service__header,
+.issue-service__section,
+.issue-service__definition-list,
+.issue-service__table-wrap,
+.issue-service__form {
+    border: 1px solid rgba(0, 0, 0, .12);
+    border-radius: .5rem;
+    background: rgba(255, 255, 255, .96);
+    box-shadow: 0 .25rem 1rem rgba(0, 0, 0, .06);
+}
+
+.issue-service__header,
+.issue-service__section,
+.issue-service__definition-list,
+.issue-service__form {
+    padding: 1.25rem;
+}
+
+.issue-service__kicker {
+    margin: 0 0 .35rem;
+    color: #5f6b76;
+    font-size: .875rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.issue-service__header h3,
+.issue-service__section h4 {
+    margin-top: 0;
+}
+
+.issue-service__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    align-items: center;
+    margin-top: .75rem;
+    color: #5f6b76;
+}
+
+.issue-service__badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.75rem;
+    padding: .2rem .65rem;
+    border-radius: 999px;
+    background: #e8f2e4;
+    color: #225b21;
+    font-size: .875rem;
+    font-weight: 700;
+}
+
+.issue-service__definition-list {
+    display: grid;
+    grid-template-columns: minmax(8rem, max-content) minmax(0, 1fr);
+    gap: .75rem 1.25rem;
+    margin: 0;
+}
+
+.issue-service__definition-list dt {
+    color: #5f6b76;
+    font-weight: 700;
+}
+
+.issue-service__definition-list dd {
+    margin: 0;
+}
+
+.issue-service__timeline {
+    display: grid;
+    gap: .75rem;
+}
+
+.issue-service__timeline-entry {
+    padding: .85rem 1rem;
+    border-left: 4px solid #86af35;
+    background: #f6f8f3;
+}
+
+.issue-service__timeline-entry time {
+    display: block;
+    margin-bottom: .25rem;
+    color: #5f6b76;
+    font-size: .875rem;
+}
+
+.issue-service__timeline-entry p {
+    margin: 0;
+}
+
+.issue-service__table-wrap {
+    overflow-x: auto;
+}
+
+.issue-service__table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.issue-service__table th,
+.issue-service__table td {
+    padding: .85rem 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, .08);
+    text-align: left;
+    vertical-align: top;
+}
+
+.issue-service__table th {
+    background: #f5f7f3;
+    color: #4b5963;
+    font-weight: 700;
+}
+
+.issue-service__ticket-link,
+.issue-service__title {
+    font-weight: 700;
+}
+
+.issue-service__form .widget {
+    margin-bottom: 1rem;
+}
+
+.issue-service__form label {
+    display: block;
+    margin-bottom: .35rem;
+    font-weight: 700;
+}
+
+.issue-service__form input[type="text"],
+.issue-service__form textarea,
+.issue-service__form select {
+    width: 100%;
+    max-width: 100%;
+}
+
+.issue-service__form button,
+.issue-service__form input[type="submit"] {
+    min-height: 2.5rem;
+    padding: .55rem 1rem;
+    border: 0;
+    border-radius: .35rem;
+    background: #86af35;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.issue-service__empty {
+    margin: 0;
+    padding: 1rem 1.25rem;
+    border-radius: .5rem;
+    background: #f5f7f3;
+    color: #4b5963;
+}
+
+@media (max-width: 640px) {
+    .issue-service__definition-list {
+        grid-template-columns: 1fr;
+    }
+
+    .issue-service__definition-list dt {
+        margin-top: .4rem;
+    }
+}

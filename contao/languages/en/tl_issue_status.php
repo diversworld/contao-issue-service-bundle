@@ -16,3 +16,4 @@ $GLOBALS['TL_LANG']['tl_issue_status']['is_initial'] = ['Initial status', 'Use t
 $GLOBALS['TL_LANG']['tl_issue_status']['is_resolved'] = ['Resolved', 'Issues in this status are considered resolved.'];
 $GLOBALS['TL_LANG']['tl_issue_status']['is_closed'] = ['Closed', 'Issues in this status are considered closed.'];
 $GLOBALS['TL_LANG']['tl_issue_status']['published'] = ['Published', 'Make the status available in the workflow.'];
+$GLOBALS['TL_LANG']['tl_issue_status']['transitions'] = ['Workflow rules', 'Manage allowed status changes and roles.'];

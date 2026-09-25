@@ -27,6 +27,12 @@ final class CommentTypeTest extends TestCase
         $path = tempnam(sys_get_temp_dir(), 'reply-');
         file_put_contents($path, "%PDF-1.4\n1 0 obj\n<<>>\nendobj\n%%EOF");
         try {
+            $statusForm = $factory->create(CommentType::class, null, ['status_choices' => [2 => 'Gelöst']]);
+            $statusForm->submit(['body' => '', 'attachments' => [], 'targetStatus' => '2']);
+            self::assertTrue($statusForm->isValid(), (string) $statusForm->getErrors(true));
+            $invalidStatus = $factory->create(CommentType::class, null, ['status_choices' => [2 => 'Gelöst']]);
+            $invalidStatus->submit(['body' => 'Antwort', 'attachments' => [], 'targetStatus' => '999']);
+            self::assertFalse($invalidStatus->isValid());
             $pdf = new UploadedFile($path, 'document.pdf', null, null, true);
             $bad = new UploadedFile($path, 'document.exe', null, null, true);
             foreach ([['', [], false], ['   ', [], false], ['Antwort', [], true], ['', [$pdf], true], ['Antwort', [$pdf], true], ['', [$bad], false]] as [$body, $attachments, $valid]) {

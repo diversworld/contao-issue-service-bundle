@@ -29,6 +29,7 @@ final class IssueDetailModule extends AbstractFrontendModuleController
 
     public function __construct(
         private readonly IssueRepository $issues,
+        private readonly \Diversworld\ContaoIssueServiceBundle\Application\IssueWorkflowService $workflow,
         private readonly FormFactoryInterface $formFactory,
         private readonly AuthorizationCheckerInterface $authorizationChecker,
         private readonly ContaoCsrfTokenManager $csrfTokenManager,
@@ -68,7 +69,7 @@ final class IssueDetailModule extends AbstractFrontendModuleController
         $template->set('issue', $issue);
         $template->set('attachments', $this->issues->attachments((int) $issue['id']));
         $template->set('timeline', $this->issues->publicTimeline((int) $issue['id']));
-        $template->set('commentForm', $this->formFactory->create(CommentType::class, null, $this->getContaoCsrfFormOptions() + ['profile_id' => (int) ($issue['profile_id'] ?? 0)])->createView());
+        $template->set('commentForm', $this->formFactory->create(CommentType::class, null, $this->getContaoCsrfFormOptions() + ['profile_id' => (int) ($issue['profile_id'] ?? 0), 'status_choices' => $this->workflow->choices($issue)])->createView());
 
         $response = $template->getResponse();
         $response->setPrivate();

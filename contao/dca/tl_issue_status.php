@@ -10,6 +10,13 @@ $GLOBALS['TL_DCA']['tl_issue_status'] = [
 	'list' => ['sorting' => ['mode' => DataContainer::MODE_SORTED, 
 	'fields' => ['sort_order'], 'flag' => DataContainer::SORT_ASC], 
 	'label' => ['fields' => ['title', 'status_key'], 'format' => '%s [%s]'], 
+	'global_operations' => [
+        'transitions' => [
+            'label' => &$GLOBALS['TL_LANG']['tl_issue_status']['transitions'],
+            'href' => 'table=tl_issue_transition',
+            'icon' => 'redirect.svg',
+        ],
+    ],
 	'operations' => [
 		'edit',
 		'children',

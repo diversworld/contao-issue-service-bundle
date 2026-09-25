@@ -18,3 +18,8 @@ $GLOBALS['TL_LANG']['tl_issue_transition']['role_key_options'] = [
     'agent' => 'Agent',
     'manager' => 'Manager',
 ];
+$GLOBALS['TL_LANG']['tl_issue_transition']['statuses'] = ['Manage statuses', 'Edit the available ticket statuses.'];
+
+$GLOBALS['TL_LANG']['tl_issue_transition']['conditions_legend'] = 'Conditions';
+
+$GLOBALS['TL_LANG']['tl_issue_transition']['publish_legend'] = 'Activation';

@@ -71,7 +71,7 @@ final class IssueJournalCallbacks
             $before = $this->before[$id] ?? false;
             $publicChange = false;
             if ($before && $after) {
-                foreach (['status_id' => 'status_changed', 'priority' => 'priority_changed', 'assigned_user_id' => 'assignment_changed', 'resolution' => 'resolution_changed'] as $field => $event) {
+                foreach (['priority' => 'priority_changed', 'assigned_user_id' => 'assignment_changed', 'resolution' => 'resolution_changed'] as $field => $event) {
                     if ((string) $before[$field] === (string) $after[$field]) {
                         continue;
                     }
@@ -82,12 +82,7 @@ final class IssueJournalCallbacks
                     ]);
                     $publicChange = $publicChange || in_array($field, ['status_id', 'priority'], true);
                 }
-                if ((string) $before['status_id'] !== (string) $after['status_id']) {
-                    $status = $this->db->fetchAssociative('SELECT is_resolved, is_closed FROM tl_issue_status WHERE id=:id', ['id' => $after['status_id']]);
-                    if ($status) {
-                        $this->db->update('tl_issue', ['resolved_at' => $status['is_resolved'] ? $now : null, 'closed_at' => $status['is_closed'] ? $now : null], ['id' => $id]);
-                    }
-                }
+
             }
             if ($publicChange) {
                 $this->db->update('tl_issue', ['last_public_activity_at' => $now], ['id' => $id]);

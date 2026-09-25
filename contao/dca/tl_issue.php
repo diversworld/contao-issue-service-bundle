@@ -97,7 +97,7 @@ $GLOBALS['TL_DCA']['tl_issue'] = [
         'status_id' => [
             'inputType' => 'select',
             'foreignKey' => 'tl_issue_status.title',
-            'eval' => ['mandatory' => true, 'chosen' => true, 'tl_class' => 'w25'],
+            'eval' => ['mandatory' => true, 'isAssociative' => true, 'chosen' => true, 'tl_class' => 'w25'],
             'filter' => true,
             'relation' => ['type' => 'hasOne', 'load' => 'eager'],
             'sql' => "int unsigned NOT NULL default 0",

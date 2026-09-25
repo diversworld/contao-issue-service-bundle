@@ -39,3 +39,6 @@ services:
 
   Diversworld\ContaoIssueServiceBundle\EventListener\DataContainer\IssueSettingsDcaCallbacks:
     public: true
+
+  Diversworld\ContaoIssueServiceBundle\EventListener\DataContainer\AttachmentDirectoryCallback:
+    public: true

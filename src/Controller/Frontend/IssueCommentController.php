@@ -46,6 +46,7 @@ final class IssueCommentController extends AbstractController
         if (!$f->isSubmitted() || !$f->isValid()) {
             return $this->render('@ContaoIssueService/issue/detail.html.twig', [
                 'issue' => $issue,
+                'attachments' => $repo->attachments((int) $issue['id']),
                 'timeline' => $repo->publicTimeline((int) $issue['id']),
                 'commentForm' => $f->createView(),
             ], new Response(status: 422));

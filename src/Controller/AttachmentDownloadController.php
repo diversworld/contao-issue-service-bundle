@@ -20,8 +20,9 @@ final class AttachmentDownloadController extends AbstractController
         $row=$db->fetchAssociative(
             "SELECT a.*,i.member_id 
             FROM tl_issue_attachment a 
-            JOIN tl_issue i ON i.id=a.issue_id 
-            WHERE a.id=:id AND HEX(i.uuid)=REPLACE(UPPER(:uuid),'-','')",
+            JOIN tl_issue i ON i.id=a.issue_id
+            LEFT JOIN tl_issue_comment c ON c.id=a.comment_id AND c.issue_id=a.issue_id
+            WHERE i.deleted_at IS NULL AND (a.comment_id IS NULL OR c.visibility='public') AND a.id=:id AND HEX(i.uuid)=REPLACE(UPPER(:uuid),'-','')",
             ['id'=>$id,'uuid'=>$uuid]
         );
         
@@ -30,12 +31,17 @@ final class AttachmentDownloadController extends AbstractController
         
         $this->denyAccessUnlessGranted(AttachmentVoter::DOWNLOAD,$row);
         
+        if (!is_file($files->path($row['storage_key']))) {
+            throw $this->createNotFoundException('Attachment file not found.');
+        }
         $r=new BinaryFileResponse($files->path($row['storage_key']));
         
         $r->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT,$row['original_name']);
         $r->headers->set('Content-Type','application/octet-stream');
         $r->headers->set('X-Content-Type-Options','nosniff');
         
+        $r->setPrivate();
+        $r->headers->set('Cache-Control', 'private, no-store');
         return $r;
     } 
 }

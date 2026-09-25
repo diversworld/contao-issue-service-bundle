@@ -10,6 +10,17 @@
         <dd>{{ issue.description|nl2br }}</dd>
     </dl>
 
+<section class="issue-service__section">
+    <h4>Anhänge</h4>
+    <ul>
+        {% for attachment in attachments|default([]) %}
+            <li><a href="{{ path('issue_service_attachment', {uuid: issue.uuid, id: attachment.id}) }}">{{ attachment.original_name }}</a> ({{ (attachment.file_size / 1024)|round(1) }} KB)</li>
+        {% else %}
+            <li>Keine Anhänge vorhanden.</li>
+        {% endfor %}
+    </ul>
+</section>
+
     <h2>Verlauf</h2>
     {% for e in timeline %}
         <article>

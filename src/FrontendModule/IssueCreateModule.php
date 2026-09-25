@@ -56,6 +56,12 @@ final class IssueCreateModule extends AbstractFrontendModuleController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $directory = $model->issue_attachment_folder
+                ? 'files:'.\Contao\StringUtil::binToUuid($model->issue_attachment_folder)
+                : (string) $model->issue_attachment_directory;
+            if ($model->issue_attachment_folder) {
+                \Diversworld\ContaoIssueServiceBundle\Infrastructure\LocalAttachmentStorage::resolveFolder(substr($directory, 6));
+            }
             $data = $form->getData();
             $issue = $this->issues->create(
                 new CreateIssueCommand(
@@ -70,7 +76,7 @@ final class IssueCreateModule extends AbstractFrontendModuleController
             );
 
             foreach ($form->get('attachments')->getData() ?? [] as $file) {
-                $this->attachments->upload($issue['id'], $file, 'member', (int) $user->id);
+                $this->attachments->upload($issue['id'], $file, 'member', (int) $user->id, directory: $directory);
             }
 
             return new RedirectResponse($this->generateDetailUrl((string) $issue['uuid'], $model));

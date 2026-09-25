@@ -15,7 +15,7 @@ final class AttachmentService
     public function __construct(private readonly Connection $db,private readonly SettingsService $settings,private readonly AttachmentStorageInterface $storage, private readonly AttachmentConstraints $constraints, private readonly \Symfony\Component\Validator\Validator\ValidatorInterface $validator)
     {} 
     
-    public function upload(int $issueId,UploadedFile $file,string $uploaderType,?int $uploaderId,?int $commentId=null):int
+    public function upload(int $issueId,UploadedFile $file,string $uploaderType,?int $uploaderId,?int $commentId=null,string $directory=''):int
     {
         $violations = $this->validator->validate($file, $this->constraints->file());
         if (count($violations) > 0) {
@@ -28,10 +28,21 @@ final class AttachmentService
         if($count>=$this->settings->int('max_files_per_issue',5))
             throw new \InvalidArgumentException('Maximum attachment count reached.');
         
+        if (str_starts_with($directory, 'files:')) {
+            \Diversworld\ContaoIssueServiceBundle\Infrastructure\LocalAttachmentStorage::resolveFolder(substr($directory, 6));
+        } else {
+            \Diversworld\ContaoIssueServiceBundle\Infrastructure\LocalAttachmentStorage::validateDirectory($directory);
+        }
         $key=str_replace('-','',Uuid::v7()->toRfc4122()).'.'.$ext;
+        if ($directory !== '') {
+            $key = $directory.'/'.$key;
+        }
         $tmp=$file->getRealPath();
         if(false===$tmp)
             throw new \RuntimeException('Temporary file unavailable.');
+        // The storage adapter moves the temporary file; read metadata first.
+        $mimeType = (string) $file->getMimeType();
+        $fileSize = $file->getSize();
         $sha=hash_file('sha256',$tmp);
         $this->storage->store($tmp,$key);
         $this->db->insert('tl_issue_attachment',[
@@ -40,8 +51,8 @@ final class AttachmentService
             'comment_id'=>$commentId,
             'storage_key'=>$key,
             'original_name'=>basename($file->getClientOriginalName()),
-            'mime_type'=>(string)$file->getMimeType(),
-            'file_size'=>$file->getSize(),
+            'mime_type'=>$mimeType,
+            'file_size'=>$fileSize,
             'sha256'=>$sha,
             'uploaded_by_type'=>$uploaderType,
             'uploaded_by_id'=>$uploaderId,

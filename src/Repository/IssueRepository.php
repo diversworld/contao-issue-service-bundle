@@ -104,6 +104,15 @@ final class IssueRepository
         return $entries;
     }
 
+    /** @return list<array<string, mixed>> */
+    public function attachments(int $issueId, bool $internal = false): array
+    {
+        return $this->db->fetchAllAssociative(
+            'SELECT a.id, a.original_name, a.file_size, a.created_at FROM tl_issue_attachment a LEFT JOIN tl_issue_comment c ON c.id=a.comment_id AND c.issue_id=a.issue_id WHERE a.issue_id=:id'.($internal ? '' : " AND (a.comment_id IS NULL OR c.visibility='public')").' ORDER BY a.created_at, a.id',
+            ['id' => $issueId],
+        );
+    }
+
     public function connection(): Connection
     {
         return $this->db;

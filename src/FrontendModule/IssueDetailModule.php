@@ -66,6 +66,7 @@ final class IssueDetailModule extends AbstractFrontendModuleController
         }
 
         $template->set('issue', $issue);
+        $template->set('attachments', $this->issues->attachments((int) $issue['id']));
         $template->set('timeline', $this->issues->publicTimeline((int) $issue['id']));
         $template->set('commentForm', $this->formFactory->create(CommentType::class, null, $this->getContaoCsrfFormOptions())->createView());
 

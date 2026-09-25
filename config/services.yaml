@@ -36,3 +36,6 @@ services:
   # DC_Table resolves this callback directly from its DCA registration.
   Diversworld\ContaoIssueServiceBundle\EventListener\DataContainer\IssueDcaCallbacks:
     public: true
+
+  Diversworld\ContaoIssueServiceBundle\EventListener\DataContainer\IssueSettingsDcaCallbacks:
+    public: true

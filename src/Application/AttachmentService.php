@@ -12,21 +12,17 @@ use Diversworld\ContaoIssueServiceBundle\Application\SettingsService;
 
 final class AttachmentService 
 { 
-    public function __construct(private readonly Connection $db,private readonly SettingsService $settings,private readonly AttachmentStorageInterface $storage)
+    public function __construct(private readonly Connection $db,private readonly SettingsService $settings,private readonly AttachmentStorageInterface $storage, private readonly AttachmentConstraints $constraints, private readonly \Symfony\Component\Validator\Validator\ValidatorInterface $validator)
     {} 
     
     public function upload(int $issueId,UploadedFile $file,string $uploaderType,?int $uploaderId,?int $commentId=null):int
     {
-        $ext=strtolower((string)$file->guessExtension());
-        
-        $allowed=array_map('strtolower',$this->settings->json('allowed_extensions',['pdf','png','jpg','jpeg']));
-        
-        if(!in_array($ext,$allowed,true))
-            throw new \InvalidArgumentException('File type not allowed.');
-        
-        if($file->getSize()>$this->settings->int('max_file_size',10485760))
-            throw new \InvalidArgumentException('File too large.');
-        
+        $violations = $this->validator->validate($file, $this->constraints->file());
+        if (count($violations) > 0) {
+            throw new \InvalidArgumentException((string) $violations[0]->getMessage());
+        }
+        $ext = strtolower($file->getClientOriginalExtension());
+
         $count=(int)$this->db->fetchOne('SELECT COUNT(*) FROM tl_issue_attachment WHERE issue_id=:i',['i'=>$issueId]);
         
         if($count>=$this->settings->int('max_files_per_issue',5))

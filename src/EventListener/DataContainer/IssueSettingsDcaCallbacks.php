@@ -129,7 +129,7 @@ final class IssueSettingsDcaCallbacks
         }
 
         if (\in_array($key, ['allowed_extensions', 'reopen_roles'], true)) {
-            return json_encode(array_values((array) $value), JSON_THROW_ON_ERROR);
+            return json_encode(\Diversworld\ContaoIssueServiceBundle\Application\SettingsList::decode($value), JSON_THROW_ON_ERROR);
         }
 
         if ('mail_recipients' === $key) {
@@ -216,17 +216,7 @@ final class IssueSettingsDcaCallbacks
     /** @return list<string> */
     private function decodeList(?string $value): array
     {
-        if (null === $value || '' === $value) {
-            return [];
-        }
-
-        try {
-            $decoded = json_decode($value, true, 512, JSON_THROW_ON_ERROR);
-        } catch (\JsonException) {
-            return [];
-        }
-
-        return \is_array($decoded) ? array_values(array_filter(array_map('strval', $decoded))) : [];
+        return \Diversworld\ContaoIssueServiceBundle\Application\SettingsList::decode($value);
     }
 
     /** @return array<string,mixed> */

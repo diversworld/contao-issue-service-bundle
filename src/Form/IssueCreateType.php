@@ -18,7 +18,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 final class IssueCreateType extends AbstractType
 {
-    public function __construct(private readonly ServiceRepository $services)
+    public function __construct(private readonly ServiceRepository $services, private readonly \Diversworld\ContaoIssueServiceBundle\Application\AttachmentConstraints $uploads)
     {
     }
 
@@ -58,7 +58,7 @@ final class IssueCreateType extends AbstractType
                 'label' => 'Beschreibung',
                 'constraints' => [new Assert\NotBlank(), new Assert\Length(min: 10, max: 50000)],
             ])
-            ->add('attachments', FileType::class, ['label' => 'Anhänge', 'mapped' => false, 'multiple' => true, 'required' => false])
+            ->add('attachments', FileType::class, ['label' => 'Anhänge', 'mapped' => false, 'multiple' => true, 'required' => false, 'constraints' => $this->uploads->all(), 'help' => 'Erlaubte Dateitypen: '.implode(', ', $this->uploads->extensions())])
             ->add('submit', SubmitType::class, ['label' => 'Issue erstellen']);
     }
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Contao\DataContainer;
 use Contao\DC_Table;
 use Diversworld\ContaoIssueServiceBundle\EventListener\DataContainer\IssueDcaCallbacks;
+use \Diversworld\ContaoIssueServiceBundle\EventListener\DataContainer\IssueJournalCallbacks;
 
 $GLOBALS['TL_DCA']['tl_issue'] = [
     'config' => [
@@ -47,12 +48,12 @@ $GLOBALS['TL_DCA']['tl_issue'] = [
     ],
     'palettes' => [
         'default' => '{issue_legend},ticket_number,title,issue_type,service_id,category_id,description;
-                      {processing_legend},status_id,priority,assigned_user_id,resolution; 
+                      {processing_legend},status_id,priority,assigned_user_id;{resolution_legend},resolution;
                       {journal_legend},journal;{time_legend},created_at,updated_at,last_public_activity_at,resolved_at,closed_at',
     ],
     'fields' => [
         'journal' => [
-            'input_field_callback' => [\Diversworld\ContaoIssueServiceBundle\EventListener\DataContainer\IssueJournalCallbacks::class, 'render'],
+            'input_field_callback' => [IssueJournalCallbacks::class, 'render'],
         ],
         'id' => [
             'sql' => 'bigint unsigned NOT NULL auto_increment'

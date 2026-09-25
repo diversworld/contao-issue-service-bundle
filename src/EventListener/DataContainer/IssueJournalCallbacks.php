@@ -35,7 +35,7 @@ final class IssueJournalCallbacks
     public function render(DataContainer $dc): string
     {
         $escape = static fn (string $text): string => htmlspecialchars($text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        $html = '<div class="clr"><h3>Journal und Antworten</h3>';
+        $html = '<div class="clr"><h3>Journal und Antworten</h3></div>';
         $authors = ['member' => 'Mitglied', 'guest' => 'Gast', 'user' => 'Bearbeiter', 'system' => 'System'];
         foreach ($this->issues->timeline((int) $dc->id, true) as $entry) {
             $visibility = $entry['visibility'] === 'internal' ? 'Intern' : 'Für Frontend-Nutzer sichtbar';
@@ -44,8 +44,8 @@ final class IssueJournalCallbacks
         $request = $this->requests->getCurrentRequest();
         $body = (string) ($request?->request->get('journal_body', '') ?? '');
         $public = $request?->request->get('journal_visibility') === 'public';
-        return $html.'</div><div class="widget clr"><h3><label for="journal_body">Neue Notiz / Antwort</label></h3><textarea id="journal_body" name="journal_body" class="tl_textarea" rows="6">'.$escape($body).'</textarea></div>'
-            .'<div class="widget clr"><h3><label for="journal_visibility">Sichtbarkeit der neuen Notiz</label></h3><select id="journal_visibility" name="journal_visibility" class="tl_select"><option value="internal"'.(!$public ? ' selected' : '').'>Nur intern im Backend</option><option value="public"'.($public ? ' selected' : '').'>Im Frontend-Verlauf sichtbar</option></select><p class="tl_help tl_tip">Die Notiz wird beim Speichern des Tickets dem Journal hinzugefügt.</p></div>';
+        return '<div class="widget clr"><h3><label for="journal_body">Neue Notiz / Antwort</label></h3><textarea id="journal_body" name="journal_body" class="tl_textarea" rows="6">'.$escape($body).'</textarea></div>'
+            .'<div class="widget clr"><h3><label for="journal_visibility">Sichtbarkeit der neuen Notiz</label></h3><select id="journal_visibility" name="journal_visibility" class="tl_select"><option value="internal"'.(!$public ? ' selected' : '').'>Nur intern im Backend</option><option value="public"'.($public ? ' selected' : '').'>Im Frontend-Verlauf sichtbar</option></select><p class="tl_help tl_tip">Die Notiz wird beim Speichern des Tickets dem Journal hinzugefügt.</p></div>'.$html;
     }
 
     #[AsCallback(table: 'tl_issue', target: 'config.onsubmit')]

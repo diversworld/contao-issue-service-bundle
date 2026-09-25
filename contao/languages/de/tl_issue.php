@@ -3,6 +3,7 @@
 $GLOBALS['TL_LANG']['tl_issue']['issue_legend'] = 'Issue';
 $GLOBALS['TL_LANG']['tl_issue']['processing_legend'] = 'Bearbeitung';
 $GLOBALS['TL_LANG']['tl_issue']['time_legend'] = 'Zeitangaben';
+$GLOBALS['TL_LANG']['tl_issue']['resolution_legend'] = 'Loesung';
 
 $GLOBALS['TL_LANG']['tl_issue']['new'] = ['Neues Issue', 'Ein neues Issue anlegen.'];
 $GLOBALS['TL_LANG']['tl_issue']['edit'] = ['Issue bearbeiten', 'Issue ID %s bearbeiten.'];

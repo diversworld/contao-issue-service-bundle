@@ -32,3 +32,7 @@ services:
 
   Diversworld\ContaoIssueServiceBundle\Backend\IssueDashboardModule:
     public: true
+
+  # DC_Table resolves this callback directly from its DCA registration.
+  Diversworld\ContaoIssueServiceBundle\EventListener\DataContainer\IssueDcaCallbacks:
+    public: true

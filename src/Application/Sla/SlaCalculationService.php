@@ -8,8 +8,13 @@ use Diversworld\ContaoIssueServiceBundle\Application\License\PremiumFeatureResol
 
 final class SlaCalculationService
 {
+    private readonly SlaPolicyResolver $policies;
+
     public function __construct(private readonly Connection $db, private readonly BusinessCalendar $calendar,
-        private readonly PremiumFeatureResolver $premium, private readonly SlaHistory $history, private readonly ?SlaPolicyResolver $policies = null) {}
+        private readonly PremiumFeatureResolver $premium, private readonly SlaHistory $history, ?SlaPolicyResolver $policies = null)
+    {
+        $this->policies = $policies ?? new SlaPolicyResolver($db, $calendar);
+    }
 
     public function calculateAll(?int $now = null): int
     {
@@ -35,28 +40,22 @@ final class SlaCalculationService
             if (!$status) return;
             $terminal = $status['is_resolved'] || $status['is_closed'];
             $start = $issue['created_at'] ? (new \DateTimeImmutable($issue['created_at']))->getTimestamp() : $now;
-            $policy = $this->policies?->resolve($issue, $start);
-            $slaId = $this->policies ? (int) ($policy['sla_id'] ?? 0) : (int) ($issue['sla_override_id'] ?: $this->db->fetchOne('SELECT sla_id FROM tl_issue_service WHERE id=?', [$issue['service_id']]));
+            $policy = $this->policies->resolve($issue, $start);
+            $slaId = (int) ($policy['sla_id'] ?? 0);
             $patch = [];
             $event = 'calculated';
             if (!$slaId) {
                 if ((int) $issue['sla_id']) $this->save($issue, ['sla_id' => 0, 'sla_state' => 'none', 'response_due_at' => null, 'resolve_due_at' => null, 'sla_snapshot' => null], 'unassigned', $now, $actorId);
                 return;
             }
-            $assigned = (int) $issue['sla_id'] !== $slaId || !$issue['sla_snapshot'] || ($policy && json_decode($issue['sla_snapshot'], true, 32, JSON_THROW_ON_ERROR) !== $policy);
+            $previous = json_decode($issue['sla_snapshot'] ?: 'null', true, 32, JSON_THROW_ON_ERROR);
+            $assigned = (int) $issue['sla_id'] !== $slaId || !$previous || (isset($previous['identity']) && $previous !== $policy);
+            if (!$assigned && $policy && !isset($previous['identity'])) {
+                // Upgrade legacy snapshots without resetting paused budgets, deadlines or escalation cycles.
+                $patch['sla_snapshot'] = json_encode($policy, JSON_THROW_ON_ERROR);
+            }
             if ($assigned) {
-                if ($policy) {
-                    $snapshot = $policy;
-                } else {
-                $definition = $this->db->fetchAssociative('SELECT * FROM tl_issue_sla WHERE id=? AND published=1', [$slaId]);
-                if (!$definition) return;
-                $hours = json_decode($definition['business_hours'], true, 32, JSON_THROW_ON_ERROR);
-                $holidays = json_decode($definition['holidays'] ?: '[]', true, 32, JSON_THROW_ON_ERROR);
-                $this->calendar->validate($definition['timezone'], $hours, $holidays);
-                $snapshot = ['timezone' => $definition['timezone'], 'hours' => $hours, 'holidays' => $holidays,
-                    'response' => (int) $definition['response_minutes'] * 60, 'resolve' => (int) $definition['resolve_minutes'] * 60];
-                if ($snapshot['response'] <= 0 || $snapshot['resolve'] <= 0) throw new \DomainException('SLA-Zeiten müssen positiv sein.');
-                }
+                $snapshot = $policy ?? throw new \LogicException('SLA policy unavailable.');
                 // Reassignment never restarts the clock at the edit time.
                 $patch = ['sla_id' => $slaId, 'sla_snapshot' => json_encode($snapshot, JSON_THROW_ON_ERROR), 'sla_state' => 'active',
                     'response_due_at' => $this->add($start, $snapshot['response'], $snapshot), 'resolve_due_at' => $this->add($start, $snapshot['resolve'], $snapshot),

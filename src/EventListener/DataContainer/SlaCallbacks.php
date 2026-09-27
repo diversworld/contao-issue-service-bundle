@@ -76,14 +76,6 @@ final class SlaCallbacks
         new \DateTimeZone((string) $value);
         return (string) $value;
     }
-    #[AsCallback(table: 'tl_issue_sla', target: 'fields.business_hours.save')]
-    public function hours(mixed $value): string
-    {
-        $hours = json_decode((string) $value, true, 32, JSON_THROW_ON_ERROR);
-        if (!is_array($hours)) throw new \DomainException('Geschäftszeiten müssen ein JSON-Objekt sein.');
-        $this->calendar->validate('UTC', $hours, []);
-        return (string) $value;
-    }
     #[AsCallback(table: 'tl_issue_sla', target: 'fields.holidays.save')]
     public function holidays(mixed $value): string
     {

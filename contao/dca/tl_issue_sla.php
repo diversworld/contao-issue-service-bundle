@@ -63,9 +63,28 @@ $GLOBALS['TL_DCA']['tl_issue_sla'] = [
         ],
         'business_hours' => [
             'sql' => 'text NULL',
-            'inputType' => 'textarea',
+            'inputType' => 'rowWizard',
+            'fields' => [
+                'day' => [
+                    'label' => &$GLOBALS['TL_LANG']['tl_issue_sla']['hours_day'],
+                    'inputType' => 'select',
+                    'options' => [1, 2, 3, 4, 5, 6, 7],
+                    'reference' => &$GLOBALS['TL_LANG']['tl_issue_sla']['weekdays'],
+                    'eval' => ['mandatory' => true],
+                ],
+                'from' => [
+                    'label' => &$GLOBALS['TL_LANG']['tl_issue_sla']['hours_from'],
+                    'inputType' => 'text',
+                    'eval' => ['mandatory' => true, 'maxlength' => 5],
+                ],
+                'to' => [
+                    'label' => &$GLOBALS['TL_LANG']['tl_issue_sla']['hours_to'],
+                    'inputType' => 'text',
+                    'eval' => ['mandatory' => true, 'maxlength' => 5],
+                ],
+            ],
             'default' => '{"1":[["09:00","17:00"]],"2":[["09:00","17:00"]],"3":[["09:00","17:00"]],"4":[["09:00","17:00"]],"5":[["09:00","17:00"]]}',
-            'eval' => ['mandatory' => true],
+            'eval' => ['mandatory' => true, 'min' => 1, 'sortable' => false, 'tl_class' => 'clr'],
         ],
         'holidays' => [
             'sql' => 'text NULL',

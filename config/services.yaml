@@ -77,3 +77,11 @@ services:
     decorates: contao.doctrine.schema_provider
     arguments:
       $inner: '@Diversworld\ContaoIssueServiceBundle\Infrastructure\ContaoSchemaProvider.inner'
+
+  issue_service.sla_webhook_client:
+    class: Symfony\Component\HttpClient\NoPrivateNetworkHttpClient
+    arguments: ['@http_client']
+
+  Diversworld\ContaoIssueServiceBundle\Application\Sla\SlaWebhookDispatcher:
+    arguments:
+      $client: '@issue_service.sla_webhook_client'

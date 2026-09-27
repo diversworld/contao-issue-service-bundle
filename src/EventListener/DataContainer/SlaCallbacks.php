@@ -31,6 +31,10 @@ final class SlaCallbacks
     }
 
     #[AsCallback(table: 'tl_issue_sla', target: 'config.onload')]
+    #[AsCallback(table: 'tl_issue_sla_calendar', target: 'config.onload')]
+    #[AsCallback(table: 'tl_issue_sla_contract', target: 'config.onload')]
+    #[AsCallback(table: 'tl_issue_sla_priority', target: 'config.onload')]
+    #[AsCallback(table: 'tl_issue_sla_webhook', target: 'config.onload')]
     #[AsCallback(table: 'tl_issue_sla_level', target: 'config.onload')]
     #[AsCallback(table: 'tl_issue_sla_escalation', target: 'config.onload')]
     #[AsCallback(table: 'tl_issue_sla_history', target: 'config.onload')]
@@ -70,6 +74,7 @@ final class SlaCallbacks
         if ($dc->id) $this->sla->synchronize((int) $dc->id, null, (int) BackendUser::getInstance()->id);
     }
 
+    #[AsCallback(table: 'tl_issue_sla_calendar', target: 'fields.timezone.save')]
     #[AsCallback(table: 'tl_issue_sla', target: 'fields.timezone.save')]
     public function timezone(mixed $value): string
     {
@@ -84,7 +89,9 @@ final class SlaCallbacks
         $this->calendar->validate('UTC', [1 => [['09:00','17:00']]], $holidays);
         return json_encode($holidays, JSON_THROW_ON_ERROR);
     }
+    #[AsCallback(table: 'tl_issue_sla_priority', target: 'fields.response_minutes.save')]
     #[AsCallback(table: 'tl_issue_sla', target: 'fields.response_minutes.save')]
+    #[AsCallback(table: 'tl_issue_sla_priority', target: 'fields.resolve_minutes.save')]
     #[AsCallback(table: 'tl_issue_sla', target: 'fields.resolve_minutes.save')]
     public function duration(mixed $value): int
     {
@@ -94,12 +101,17 @@ final class SlaCallbacks
     #[AsCallback(table: 'tl_issue_sla_escalation', target: 'fields.recipients.save')]
     public function recipients(mixed $value): string
     {
+        if (trim((string) $value) === '') return '';
         $lines = preg_split('/[\r\n,;]+/', trim((string) $value)) ?: [];
         foreach ($lines as $line) if (!filter_var(trim($line), FILTER_VALIDATE_EMAIL)) throw new \DomainException('Ungültige Empfängeradresse.');
         if (!$lines) throw new \DomainException('Mindestens ein Empfänger erforderlich.');
         return implode("\n", SlaEscalationService::recipients((string) $value));
     }
     #[AsCallback(table: 'tl_issue_sla', target: 'config.onload', priority: -100)]
+    #[AsCallback(table: 'tl_issue_sla_calendar', target: 'config.onload', priority: -100)]
+    #[AsCallback(table: 'tl_issue_sla_contract', target: 'config.onload', priority: -100)]
+    #[AsCallback(table: 'tl_issue_sla_priority', target: 'config.onload', priority: -100)]
+    #[AsCallback(table: 'tl_issue_sla_webhook', target: 'config.onload', priority: -100)]
     #[AsCallback(table: 'tl_issue_sla_level', target: 'config.onload', priority: -100)]
     #[AsCallback(table: 'tl_issue_sla_escalation', target: 'config.onload', priority: -100)]
     #[AsCallback(table: 'tl_issue_service', target: 'config.onload', priority: -100)]
@@ -107,11 +119,15 @@ final class SlaCallbacks
     public function remember(DataContainer $dc): void
     {
         $table = (string) $dc->table;
-        if (!$dc->id || !in_array($table, ['tl_issue_sla','tl_issue_sla_level','tl_issue_sla_escalation','tl_issue_service','tl_issue'], true)) return;
+        if (!$dc->id || !in_array($table, ['tl_issue_sla_calendar','tl_issue_sla_contract','tl_issue_sla_priority','tl_issue_sla_webhook','tl_issue_sla','tl_issue_sla_level','tl_issue_sla_escalation','tl_issue_service','tl_issue'], true)) return;
         $this->before[$table.':'.$dc->id] = $this->db->fetchAssociative('SELECT * FROM '.$table.' WHERE id=?', [$dc->id]) ?: [];
     }
 
     #[AsCallback(table: 'tl_issue_sla', target: 'config.onsubmit', priority: -200)]
+    #[AsCallback(table: 'tl_issue_sla_calendar', target: 'config.onsubmit', priority: -200)]
+    #[AsCallback(table: 'tl_issue_sla_contract', target: 'config.onsubmit', priority: -200)]
+    #[AsCallback(table: 'tl_issue_sla_priority', target: 'config.onsubmit', priority: -200)]
+    #[AsCallback(table: 'tl_issue_sla_webhook', target: 'config.onsubmit', priority: -200)]
     #[AsCallback(table: 'tl_issue_sla_level', target: 'config.onsubmit', priority: -200)]
     #[AsCallback(table: 'tl_issue_sla_escalation', target: 'config.onsubmit', priority: -200)]
     #[AsCallback(table: 'tl_issue_service', target: 'config.onsubmit', priority: -200)]
@@ -120,7 +136,7 @@ final class SlaCallbacks
     {
         if (!$this->premium->enabled()) return;
         $table = (string) $dc->table;
-        if (!$dc->id || !in_array($table, ['tl_issue_sla','tl_issue_sla_level','tl_issue_sla_escalation','tl_issue_service','tl_issue'], true)) return;
+        if (!$dc->id || !in_array($table, ['tl_issue_sla_calendar','tl_issue_sla_contract','tl_issue_sla_priority','tl_issue_sla_webhook','tl_issue_sla','tl_issue_sla_level','tl_issue_sla_escalation','tl_issue_service','tl_issue'], true)) return;
         $before = $this->before[$table.':'.$dc->id] ?? [];
         $after = $this->db->fetchAssociative('SELECT * FROM '.$table.' WHERE id=?', [$dc->id]) ?: [];
         if ($table === 'tl_issue' || $table === 'tl_issue_service') {

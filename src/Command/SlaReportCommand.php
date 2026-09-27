@@ -11,9 +11,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 #[AsCommand(name: 'issue:sla:report')]
 final class SlaReportCommand extends Command
 {
-    public function __construct(private readonly SlaReportingService $reports) { parent::__construct(); }
+    public function __construct(private readonly SlaReportingService $reports, private readonly ?\Diversworld\ContaoIssueServiceBundle\Application\Sla\SlaReportExporter $exporter = null) { parent::__construct(); }
     protected function configure(): void
     {
+        $this->addOption('month', null, InputOption::VALUE_REQUIRED, 'Monat YYYY-MM');
+        $this->addOption('format', null, InputOption::VALUE_REQUIRED, 'json, pdf, xlsx, csv', 'json');
+        $this->addOption('output', null, InputOption::VALUE_REQUIRED, 'Exportdatei (wird nicht überschrieben)');
         $this->addOption('from', null, InputOption::VALUE_REQUIRED, 'Ticketanlage ab YYYY-MM-DD (einschließlich)');
         $this->addOption('until', null, InputOption::VALUE_REQUIRED, 'Ticketanlage vor YYYY-MM-DD (ausschließlich)');
     }
@@ -26,7 +29,24 @@ final class SlaReportCommand extends Command
             $dates[$key] = $value;
         }
         if ($dates['from'] !== null && $dates['until'] !== null && $dates['from'] >= $dates['until']) throw new \InvalidArgumentException('Ungültiger Berichtszeitraum.');
-        $output->writeln(json_encode($this->reports->report(null, $dates['from'], $dates['until']), JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT));
+        if ($input->getOption('month') !== null) {
+            if ($dates['from'] !== null || $dates['until'] !== null) throw new \InvalidArgumentException('--month nicht mit --from/--until kombinieren.');
+            [$dates['from'], $dates['until']] = \Diversworld\ContaoIssueServiceBundle\Application\Sla\SlaReportExporter::month((string) $input->getOption('month'));
+        }
+        $report = $this->reports->report(null, $dates['from'], $dates['until']);
+        $format = (string) $input->getOption('format');
+        $bytes = $format === 'json' ? json_encode($report, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT) : ($this->exporter ?? throw new \LogicException('Export service unavailable.'))->export($report, $format);
+        $file = $input->getOption('output');
+        if ($file === null) {
+            if ($format !== 'json') throw new \InvalidArgumentException('--output ist für Exporte erforderlich.');
+            $output->writeln($bytes);
+        } else {
+            $stream = @fopen((string) $file, 'xb');
+            if ($stream === false) throw new \RuntimeException('Exportdatei existiert bereits oder ist nicht schreibbar.');
+            try { if (fwrite($stream, $bytes) !== strlen($bytes)) throw new \RuntimeException('Exportdatei konnte nicht vollständig geschrieben werden.'); }
+            finally { fclose($stream); }
+            $output->writeln('SLA-Bericht erstellt.');
+        }
         return Command::SUCCESS;
     }
 }

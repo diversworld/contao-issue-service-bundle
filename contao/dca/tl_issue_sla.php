@@ -109,3 +109,10 @@ $GLOBALS['TL_DCA']['tl_issue_sla']['list']['global_operations']['history'] = [
     'href' => 'table=tl_issue_sla_history',
     'class' => 'header_all',
 ];
+
+$GLOBALS['TL_DCA']['tl_issue_sla']['palettes']['default'] .= ',calendar_id';
+$GLOBALS['TL_DCA']['tl_issue_sla']['fields']['calendar_id'] = ['label' => ['Supportkalender (leer = bisherige Geschäftszeiten)', ''], 'sql' => "int unsigned NOT NULL default 0", 'inputType' => 'select', 'foreignKey' => 'tl_issue_sla_calendar.title', 'eval' => ['includeBlankOption' => true, 'chosen' => true]];
+$GLOBALS['TL_DCA']['tl_issue_sla']['list']['global_operations']['calendar'] = ['label' => ['Kalender', ''], 'href' => 'table=tl_issue_sla_calendar', 'class' => 'header_all'];
+$GLOBALS['TL_DCA']['tl_issue_sla']['list']['global_operations']['contract'] = ['label' => ['Verträge', ''], 'href' => 'table=tl_issue_sla_contract', 'class' => 'header_all'];
+$GLOBALS['TL_DCA']['tl_issue_sla']['list']['global_operations']['priority'] = ['label' => ['Prioritätsregeln', ''], 'href' => 'table=tl_issue_sla_priority', 'class' => 'header_all'];
+$GLOBALS['TL_DCA']['tl_issue_sla']['list']['global_operations']['webhook'] = ['label' => ['Webhook-Zustellung', ''], 'href' => 'table=tl_issue_sla_webhook', 'class' => 'header_all'];

@@ -10,7 +10,7 @@ use Diversworld\ContaoIssueServiceBundle\Application\NotificationService;
 final class SlaCron
 {
     public function __construct(private readonly LicenseService $licenses, private readonly PremiumFeatureResolver $premium,
-        private readonly SlaEscalationService $escalations, private readonly NotificationService $notifications) {}
+        private readonly SlaEscalationService $escalations, private readonly NotificationService $notifications, private readonly \Diversworld\ContaoIssueServiceBundle\Application\Sla\SlaWebhookDispatcher $webhooks) {}
     #[AsCronJob('hourly')]
     public function validate(): void
     {
@@ -23,5 +23,6 @@ final class SlaCron
         if (!$this->premium->enabled()) return;
         $this->escalations->escalate();
         $this->notifications->dispatchPending();
+        $this->webhooks->dispatch();
     }
 }

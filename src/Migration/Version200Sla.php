@@ -9,7 +9,7 @@ use Doctrine\DBAL\Connection;
 /** Additive, restartable DBAL migration; DCA remains the schema source of truth. */
 final class Version200Sla extends AbstractMigration
 {
-    private const TABLES = ['tl_issue_sla_level', 'tl_issue_sla', 'tl_issue_sla_escalation', 'tl_issue_sla_history', 'tl_issue_license', 'tl_issue_license_validation', 'tl_issue', 'tl_issue_service'];
+    private const TABLES = ['tl_issue_sla_calendar', 'tl_issue_sla_contract', 'tl_issue_sla_priority', 'tl_issue_sla_webhook', 'tl_issue_sla_level', 'tl_issue_sla', 'tl_issue_sla_escalation', 'tl_issue_sla_history', 'tl_issue_license', 'tl_issue_license_validation', 'tl_issue', 'tl_issue_service'];
     public function __construct(private readonly Connection $db) {}
     public function shouldRun(): bool
     {

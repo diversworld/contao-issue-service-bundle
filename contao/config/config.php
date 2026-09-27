@@ -69,5 +69,5 @@ $GLOBALS['TL_MODELS']['tl_issue_notification'] = IssueNotificationModel::class;
 $GLOBALS['TL_MODELS']['tl_issue_sequence'] = IssueSequenceModel::class;
 
 $GLOBALS['BE_MOD']['issue_service_management']['issue_service_sla_dashboard'] = ['callback' => \Diversworld\ContaoIssueServiceBundle\Backend\SlaDashboardModule::class];
-$GLOBALS['BE_MOD']['issue_service_management']['issue_service_sla'] = ['tables' => ['tl_issue_sla', 'tl_issue_sla_level', 'tl_issue_sla_escalation', 'tl_issue_sla_history']];
+$GLOBALS['BE_MOD']['issue_service_management']['issue_service_sla'] = ['tables' => ['tl_issue_sla', 'tl_issue_sla_level', 'tl_issue_sla_escalation', 'tl_issue_sla_history', 'tl_issue_sla_calendar', 'tl_issue_sla_contract', 'tl_issue_sla_priority', 'tl_issue_sla_webhook']];
 $GLOBALS['BE_MOD']['issue_service_management']['issue_service_license'] = ['tables' => ['tl_issue_license', 'tl_issue_license_validation']];

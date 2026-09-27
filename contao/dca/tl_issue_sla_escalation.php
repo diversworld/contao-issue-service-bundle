@@ -64,3 +64,9 @@ $GLOBALS['TL_DCA']['tl_issue_sla_escalation'] = [
         'published' => ['sql' => 'tinyint(1) NOT NULL default 0', 'inputType' => 'checkbox'],
     ],
 ];
+
+$GLOBALS['TL_DCA']['tl_issue_sla_escalation']['palettes']['default'] .= ',webhook_url,target_status_id';
+$GLOBALS['TL_DCA']['tl_issue_sla_escalation']['fields']['recipients']['eval']['mandatory'] = false;
+$GLOBALS['TL_DCA']['tl_issue_sla_escalation']['fields']['stage']['reference'] = [1 => 'Teamleiter', 2 => 'Abteilungsleiter', 3 => 'Management'];
+$GLOBALS['TL_DCA']['tl_issue_sla_escalation']['fields']['webhook_url'] = ['label' => ['Webhook (HTTPS)', ''], 'sql' => "varchar(2048) NOT NULL default ''", 'inputType' => 'text', 'eval' => ['maxlength' => 2048]];
+$GLOBALS['TL_DCA']['tl_issue_sla_escalation']['fields']['target_status_id'] = ['label' => ['Zielstatus', ''], 'sql' => "int unsigned NOT NULL default 0", 'inputType' => 'select', 'foreignKey' => 'tl_issue_status.title', 'eval' => ['includeBlankOption' => true, 'chosen' => true]];

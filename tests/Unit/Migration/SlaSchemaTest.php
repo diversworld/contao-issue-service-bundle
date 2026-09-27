@@ -41,6 +41,9 @@ final class SlaSchemaTest extends TestCase
         self::assertTrue($migration->shouldRun());
         self::assertTrue($migration->run()->isSuccessful());
         self::assertFalse($migration->shouldRun());
+        foreach (['tl_issue_sla_calendar','tl_issue_sla_contract','tl_issue_sla_priority','tl_issue_sla_webhook'] as $table) self::assertTrue($real->createSchemaManager()->tablesExist([$table]));
+        self::assertArrayHasKey('calendar_id', $real->createSchemaManager()->listTableColumns('tl_issue_sla'));
+        self::assertArrayHasKey('webhook_url', $real->createSchemaManager()->listTableColumns('tl_issue_sla_escalation'));
         self::assertTrue($migration->run()->isSuccessful());
         self::assertSame('Existing ticket', $real->fetchOne('SELECT title FROM tl_issue WHERE id=42'));
         self::assertSame(4, (int)$real->fetchOne('SELECT COUNT(*) FROM tl_issue_sla_level'));

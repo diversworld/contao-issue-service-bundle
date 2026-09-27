@@ -34,9 +34,10 @@ final class SlaIntegrationTest extends TestCase
         $this->db = $this->createStub(Connection::class);
         foreach (['fetchAssociative', 'fetchAllAssociative', 'fetchOne', 'fetchFirstColumn', 'fetchAllKeyValue', 'executeStatement'] as $method) $this->db->method($method)->willReturnCallback(fn ($sql, $params = [], $types = []) => $this->real->$method(str_replace(' FOR UPDATE', '', $sql), $params, $types));
         foreach (['insert','update','lastInsertId','isTransactionActive'] as $method) $this->db->method($method)->willReturnCallback(fn (...$args) => $this->real->$method(...$args));
+        $this->db->method('getDatabasePlatform')->willReturn($this->real->getDatabasePlatform());
         $this->db->method('transactional')->willReturnCallback(fn (\Closure $callback) => $this->real->transactional(static fn (Connection $connection): mixed => $callback($connection)));
         // Build the test database from the actual DCA, avoiding a parallel hand-written SLA schema.
-        foreach (['tl_issue_history','tl_issue_transition','tl_issue','tl_issue_service','tl_issue_status','tl_issue_comment','tl_issue_notification','tl_issue_sla','tl_issue_sla_level','tl_issue_sla_escalation','tl_issue_sla_history','tl_issue_license','tl_issue_license_validation'] as $table) {
+        foreach (['tl_issue_sla_calendar','tl_issue_sla_contract','tl_issue_sla_priority','tl_issue_sla_webhook','tl_issue_history','tl_issue_transition','tl_issue','tl_issue_service','tl_issue_status','tl_issue_comment','tl_issue_notification','tl_issue_sla','tl_issue_sla_level','tl_issue_sla_escalation','tl_issue_sla_history','tl_issue_license','tl_issue_license_validation'] as $table) {
             require dirname(__DIR__, 3).'/contao/dca/'.$table.'.php';
             $columns = [];
             foreach ($GLOBALS['TL_DCA'][$table]['fields'] as $name => $field) {
@@ -254,4 +255,155 @@ final class SlaIntegrationTest extends TestCase
         $command=new CommandTester(new LicenseValidateCommand($rejected));
         self::assertSame(1,$command->execute([]));
     }
+    private function premiumCalculator(): SlaCalculationService
+    {
+        return new SlaCalculationService($this->db, new BusinessCalendar(), $this->premium, $this->history, new \Diversworld\ContaoIssueServiceBundle\Application\Sla\SlaPolicyResolver($this->db, new BusinessCalendar()));
+    }
+
+    public function testCustomerContractCalendarPriorityAndFrozenPolicy(): void
+    {
+        $start = (new \DateTimeImmutable('2026-10-02 17:00:00', new \DateTimeZone('Europe/Berlin')))->getTimestamp();
+        $hours = json_encode(array_fill_keys(range(1, 5), [['09:00', '18:00']]), JSON_THROW_ON_ERROR);
+        $this->real->insert('tl_issue_sla_calendar', ['id'=>1,'title'=>'Kunde DE-BY','country'=>'DE','region'=>'BY','timezone'=>'Europe/Berlin','business_hours'=>$hours,'holidays'=>'[]','maintenance'=>'[]','published'=>1]);
+        $this->real->insert('tl_issue_sla_contract', ['id'=>1,'contract_number'=>'BUSINESS-1','member_id'=>7,'sla_id'=>1,'calendar_id'=>1,'starts_at'=>$start-86400,'ends_at'=>$start+86400,'published'=>1]);
+        $this->real->insert('tl_issue_sla_priority', ['sla_id'=>1,'priority'=>'normal','response_minutes'=>480,'resolve_minutes'=>1080,'published'=>1]);
+        $this->real->update('tl_issue', ['member_id'=>7,'created_at'=>date('Y-m-d H:i:s',$start)], ['id'=>1]);
+        $calculator = $this->premiumCalculator();
+        $calculator->synchronize(1, $start);
+        $expected = (new \DateTimeImmutable('2026-10-05 16:00:00', new \DateTimeZone('Europe/Berlin')))->getTimestamp();
+        self::assertSame($expected, (int) $this->view(1, $start)['response_due_at']);
+        $snapshot = json_decode($this->real->fetchOne('SELECT sla_snapshot FROM tl_issue WHERE id=1'), true);
+        self::assertSame('BUSINESS-1', $snapshot['contract_number']);
+        $this->real->update('tl_issue_sla_contract', ['published'=>0], ['id'=>1]);
+        $this->real->update('tl_issue_sla_calendar', ['holidays'=>'["2026-10-05"]'], ['id'=>1]);
+        $calculator->synchronize(1, $start+300);
+        self::assertSame($expected, (int) $this->view(1, $start)['response_due_at']);
+        // Explicit priority change recalculates from creation, never grants a new start.
+        $this->real->insert('tl_issue_sla_priority', ['sla_id'=>1,'priority'=>'critical','response_minutes'=>15,'resolve_minutes'=>60,'published'=>1]);
+        $this->real->update('tl_issue', ['priority'=>'critical'], ['id'=>1]);
+        $calculator->synchronize(1, $start+600);
+        self::assertSame($start+900, (int) $this->view(1, $start)['response_due_at']);
+    }
+
+    public function testContractPrecedenceExpiryAndCustomerIsolation(): void
+    {
+        $this->real->insert('tl_issue_sla_contract', ['id'=>1,'contract_number'=>'GLOBAL','member_id'=>7,'sla_id'=>1,'starts_at'=>$this->start-100,'published'=>1]);
+        $this->real->insert('tl_issue_sla_contract', ['id'=>2,'contract_number'=>'SERVICE','member_id'=>7,'service_id'=>1,'sla_id'=>1,'starts_at'=>$this->start-100,'published'=>1]);
+        $resolver = new \Diversworld\ContaoIssueServiceBundle\Application\Sla\SlaPolicyResolver($this->db, new BusinessCalendar());
+        $issue = $this->real->fetchAssociative('SELECT * FROM tl_issue WHERE id=1');
+        self::assertIsArray($issue);
+        $issue['member_id']=7;
+        $policy = $resolver->resolve($issue,$this->start);
+        self::assertIsArray($policy);
+        self::assertSame('SERVICE', $policy['contract_number']);
+        $this->real->update('tl_issue_sla_contract', ['ends_at'=>$this->start], ['id'=>2]);
+        $policy = $resolver->resolve($issue,$this->start);
+        self::assertIsArray($policy);
+        self::assertSame('GLOBAL', $policy['contract_number']);
+        $issue['member_id']=8;
+        $policy = $resolver->resolve($issue,$this->start);
+        self::assertIsArray($policy);
+        self::assertSame(0, $policy['contract_id']);
+        $issue['member_id']=7; $issue['sla_override_id']=1;
+        $policy = $resolver->resolve($issue,$this->start);
+        self::assertIsArray($policy);
+        self::assertSame(0, $policy['contract_id']);
+    }
+
+    public function testWebhookAndStatusOnlyEscalationsAreIdempotent(): void
+    {
+        $this->real->insert('tl_issue_status', ['id'=>3,'status_key'=>'escalated','title'=>'Eskaliert','published'=>1]);
+        $this->real->insert('tl_issue_sla_escalation', ['id'=>1,'sla_id'=>1,'stage'=>1,'recipients'=>'','webhook_url'=>'https://example.org/hook','target_status_id'=>3,'published'=>1]);
+        $service = new SlaEscalationService($this->db,$this->premium,$this->sla,$this->history,$this->notifications);
+        self::assertSame(1,$service->escalate($this->start+3601));
+        self::assertSame(0,$service->escalate($this->start+3602));
+        self::assertSame(3,(int)$this->real->fetchOne('SELECT status_id FROM tl_issue WHERE id=1'));
+        self::assertSame(1,(int)$this->real->fetchOne('SELECT COUNT(*) FROM tl_issue_sla_webhook'));
+        self::assertSame(0,(int)$this->real->fetchOne('SELECT COUNT(*) FROM tl_issue_notification'));
+        self::assertTrue($this->history->verify(1));
+        $client = new MockHttpClient([new MockResponse('', ['http_code'=>503]),new MockResponse('', ['http_code'=>204])]);
+        $dispatcher = new \Diversworld\ContaoIssueServiceBundle\Application\Sla\SlaWebhookDispatcher($this->db,$this->premium,$client);
+        self::assertSame(0,$dispatcher->dispatch());
+        self::assertSame('retry',$this->real->fetchOne('SELECT status FROM tl_issue_sla_webhook'));
+        $this->real->executeStatement('UPDATE tl_issue_sla_webhook SET next_attempt_at=0');
+        self::assertSame(1,$dispatcher->dispatch());
+        self::assertSame(0,$dispatcher->dispatch());
+    }
+
+    public function testReportDurationsAndExports(): void
+    {
+        $this->sla->synchronize(1,$this->start);
+        $this->real->insert('tl_issue_comment', ['issue_id'=>1,'author_type'=>'user','visibility'=>'public','body'=>'Response','created_at'=>date('Y-m-d H:i:s',$this->start+600)]);
+        $this->real->update('tl_issue',['status_id'=>2,'resolved_at'=>date('Y-m-d H:i:s',$this->start+7200)],['id'=>1]);
+        $this->sla->synchronize(1,$this->start+7200);
+        $report = (new SlaReportingService($this->db,$this->premium))->report(null,'2026-04-01','2026-05-01');
+        self::assertSame(600.0,$report['metrics']['average_response_seconds']);
+        self::assertSame(7200.0,$report['metrics']['average_resolve_seconds']);
+        self::assertSame(100.0,$report['metrics']['compliance_percent']);
+        self::assertSame(0,$report['metrics']['open_escalations']);
+        $exporter = new \Diversworld\ContaoIssueServiceBundle\Application\Sla\SlaReportExporter($this->premium);
+        self::assertStringContainsString('Ticketvolumen;1',$exporter->export($report,'csv'));
+        $file = tempnam(sys_get_temp_dir(),'sla-test-');
+        self::assertIsString($file);
+        try {
+            file_put_contents($file,$exporter->export($report,'xlsx'));
+            $zip = new \ZipArchive(); self::assertTrue($zip->open($file));
+            $xml = $zip->getFromName('xl/worksheets/sheet1.xml'); self::assertIsString($xml);
+            self::assertNotFalse(simplexml_load_string($xml)); $zip->close();
+        } finally { unlink($file); }
+        self::assertStringStartsWith('%PDF-', $exporter->export($report,'pdf'));
+        $this->real->update('tl_issue_license',['token'=>'invalid'],['id'=>1]);
+        $this->expectException(\DomainException::class);
+        $exporter->export($report,'csv');
+    }
+
+    public function testOpenEscalationsDoNotIncludeOlderCycles(): void
+    {
+        $this->sla->synchronize(1,$this->start);
+        $this->history->append(1,'escalated_resolve_10_1',[], $this->start);
+        $this->history->append(1,'escalated_resolve_1_1',[], $this->start);
+        $report = (new SlaReportingService($this->db,$this->premium))->report();
+        self::assertSame(1,$report['metrics']['open_escalations']);
+        self::assertSame('escalated_resolve_1_1',$report['open_escalations'][0]['event_type']);
+    }
+
+    public function testContinuousCalendarWithMaintenanceAndLicenseGatedWebhook(): void
+    {
+        $maintenance = json_encode([[$this->start+1800,$this->start+5400]], JSON_THROW_ON_ERROR);
+        $this->real->insert('tl_issue_sla_calendar', ['id'=>1,'title'=>'24/7','timezone'=>'UTC','always_open'=>1,'business_hours'=>'{}','holidays'=>'[]','maintenance'=>$maintenance,'published'=>1]);
+        $this->real->update('tl_issue_sla',['calendar_id'=>1],['id'=>1]);
+        $this->premiumCalculator()->synchronize(1,$this->start);
+        self::assertSame($this->start+7200,(int)$this->view(1,$this->start)['response_due_at']);
+        $this->real->insert('tl_issue_sla_escalation', ['id'=>1,'sla_id'=>1,'stage'=>1,'webhook_url'=>'https://example.org/hook','published'=>1]);
+        $this->real->insert('tl_issue_sla_webhook', ['issue_id'=>1,'rule_id'=>1,'event_key'=>'test','payload'=>'{}','status'=>'pending']);
+        $this->real->update('tl_issue_license',['token'=>'invalid'],['id'=>1]);
+        $client = new MockHttpClient(static function (): never { throw new \LogicException('Must not send without license'); });
+        self::assertSame(0,(new \Diversworld\ContaoIssueServiceBundle\Application\Sla\SlaWebhookDispatcher($this->db,$this->premium,$client))->dispatch());
+        self::assertSame('pending',$this->real->fetchOne('SELECT status FROM tl_issue_sla_webhook'));
+    }
+
+    public function testLaterLowerStageDoesNotDowngradeStatus(): void
+    {
+        foreach ([3=>'lead',4=>'management'] as $id=>$key) $this->real->insert('tl_issue_status',['id'=>$id,'status_key'=>$key,'title'=>$key,'published'=>1]);
+        $this->real->insert('tl_issue_sla_escalation',['sla_id'=>1,'stage'=>1,'target_status_id'=>3,'published'=>1]);
+        $this->real->insert('tl_issue_sla_escalation',['sla_id'=>1,'stage'=>3,'delay_minutes'=>60,'target_status_id'=>4,'published'=>1]);
+        $service = new SlaEscalationService($this->db,$this->premium,$this->sla,$this->history,$this->notifications);
+        self::assertSame(2,$service->escalate($this->start+7201));
+        self::assertSame(4,(int)$this->real->fetchOne('SELECT status_id FROM tl_issue WHERE id=1'));
+        self::assertSame(1,$service->escalate($this->start+28801));
+        self::assertSame(4,(int)$this->real->fetchOne('SELECT status_id FROM tl_issue WHERE id=1'));
+    }
+
+    public function testCalendarEditorsRoundTripAndRejectInvalidMaintenance(): void
+    {
+        $callbacks = new \Diversworld\ContaoIssueServiceBundle\EventListener\DataContainer\SlaPremiumCallbacks($this->db);
+        $value = serialize([['from'=>'2026-10-05T10:00:00+02:00','to'=>'2026-10-05T12:00:00+02:00']]);
+        $stored = $callbacks->maintenance($value);
+        self::assertSame('2026-10-05T08:00:00Z',$callbacks->loadMaintenance($stored)[0]['from']);
+        self::assertSame('["2026-12-25"]',$callbacks->holidays(serialize([['date'=>'2026-12-25']])));
+        self::assertSame([['date'=>'2026-12-25']],$callbacks->loadHolidays('["2026-12-25"]'));
+        $this->expectException(\DomainException::class);
+        $callbacks->maintenance(serialize([['from'=>'2026-02-30T10:00:00Z','to'=>'2026-03-01T12:00:00Z']]));
+    }
+
 }

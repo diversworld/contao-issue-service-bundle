@@ -141,3 +141,9 @@ php vendor/bin/contao-console contao:migrate --dry-run
 ```
 
 Falls ein vorheriger Lauf die Indizes bereits gelöscht hat, erscheinen anschließend deren `CREATE INDEX`-/`CREATE UNIQUE INDEX`-Anweisungen. Ein regulärer Migrationslauf stellt diese wieder her. Ein leeres `ENGINE =` darf nicht mehr vorkommen. `--with-deletes` ist für diese Reparatur nicht erforderlich.
+
+## Premium-Service-Management
+
+Kalender, Kundenverträge, Prioritätsautomatik, Status-/Webhook-Eskalationen sowie
+Monatsberichte mit PDF/Excel/CSV nutzen dasselbe Lizenzmerkmal `sla`.
+Einrichtung und Berechnungsregeln: [SLA_PREMIUM.md](SLA_PREMIUM.md).

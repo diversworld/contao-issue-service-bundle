@@ -9,16 +9,16 @@ use Diversworld\ContaoIssueServiceBundle\Application\License\PremiumFeatureResol
 final class SlaCalculationService
 {
     public function __construct(private readonly Connection $db, private readonly BusinessCalendar $calendar,
-        private readonly PremiumFeatureResolver $premium, private readonly SlaHistory $history) {}
+        private readonly PremiumFeatureResolver $premium, private readonly SlaHistory $history, private readonly ?SlaPolicyResolver $policies = null) {}
 
-    public function calculateAll(): int
+    public function calculateAll(?int $now = null): int
     {
         $this->premium->requireSla();
         $count = 0;
         $last = 0;
         do {
             $ids = $this->db->fetchFirstColumn('SELECT id FROM tl_issue WHERE deleted_at IS NULL AND id>? ORDER BY id LIMIT 200', [$last]);
-            foreach ($ids as $id) { $this->synchronize((int) $id); $last = (int) $id; ++$count; }
+            foreach ($ids as $id) { $this->synchronize((int) $id, $now); $last = (int) $id; ++$count; }
         } while (count($ids) === 200);
         return $count;
     }
@@ -34,15 +34,20 @@ final class SlaCalculationService
             $status = $this->db->fetchAssociative('SELECT is_resolved,is_closed FROM tl_issue_status WHERE id=?', [$issue['status_id']]);
             if (!$status) return;
             $terminal = $status['is_resolved'] || $status['is_closed'];
-            $slaId = (int) ($issue['sla_override_id'] ?: $this->db->fetchOne('SELECT sla_id FROM tl_issue_service WHERE id=?', [$issue['service_id']]));
+            $start = $issue['created_at'] ? (new \DateTimeImmutable($issue['created_at']))->getTimestamp() : $now;
+            $policy = $this->policies?->resolve($issue, $start);
+            $slaId = $this->policies ? (int) ($policy['sla_id'] ?? 0) : (int) ($issue['sla_override_id'] ?: $this->db->fetchOne('SELECT sla_id FROM tl_issue_service WHERE id=?', [$issue['service_id']]));
             $patch = [];
             $event = 'calculated';
             if (!$slaId) {
                 if ((int) $issue['sla_id']) $this->save($issue, ['sla_id' => 0, 'sla_state' => 'none', 'response_due_at' => null, 'resolve_due_at' => null, 'sla_snapshot' => null], 'unassigned', $now, $actorId);
                 return;
             }
-            $assigned = (int) $issue['sla_id'] !== $slaId || !$issue['sla_snapshot'];
+            $assigned = (int) $issue['sla_id'] !== $slaId || !$issue['sla_snapshot'] || ($policy && json_decode($issue['sla_snapshot'], true, 32, JSON_THROW_ON_ERROR) !== $policy);
             if ($assigned) {
+                if ($policy) {
+                    $snapshot = $policy;
+                } else {
                 $definition = $this->db->fetchAssociative('SELECT * FROM tl_issue_sla WHERE id=? AND published=1', [$slaId]);
                 if (!$definition) return;
                 $hours = json_decode($definition['business_hours'], true, 32, JSON_THROW_ON_ERROR);
@@ -51,8 +56,8 @@ final class SlaCalculationService
                 $snapshot = ['timezone' => $definition['timezone'], 'hours' => $hours, 'holidays' => $holidays,
                     'response' => (int) $definition['response_minutes'] * 60, 'resolve' => (int) $definition['resolve_minutes'] * 60];
                 if ($snapshot['response'] <= 0 || $snapshot['resolve'] <= 0) throw new \DomainException('SLA-Zeiten müssen positiv sein.');
+                }
                 // Reassignment never restarts the clock at the edit time.
-                $start = $issue['created_at'] ? (new \DateTimeImmutable($issue['created_at']))->getTimestamp() : $now;
                 $patch = ['sla_id' => $slaId, 'sla_snapshot' => json_encode($snapshot, JSON_THROW_ON_ERROR), 'sla_state' => 'active',
                     'response_due_at' => $this->add($start, $snapshot['response'], $snapshot), 'resolve_due_at' => $this->add($start, $snapshot['resolve'], $snapshot),
                     'sla_paused_at' => null, 'sla_cycle' => (int) $issue['sla_cycle'] + 1, 'sla_response_breached' => 0, 'sla_resolve_breached' => 0];
@@ -124,12 +129,12 @@ final class SlaCalculationService
     /** @param array<string, mixed> $snapshot */
     private function add(int $start, int $seconds, array $snapshot): int
     {
-        return $this->calendar->add($start, $seconds, $snapshot['timezone'], $snapshot['hours'], $snapshot['holidays']);
+        return $this->calendar->add($start, $seconds, $snapshot['timezone'], $snapshot['hours'], $snapshot['holidays'], $snapshot['maintenance'] ?? []);
     }
     /** @param array<string, mixed> $snapshot */
     private function between(int $start, int $end, array $snapshot): int
     {
-        return $this->calendar->between($start, $end, $snapshot['timezone'], $snapshot['hours'], $snapshot['holidays']);
+        return $this->calendar->between($start, $end, $snapshot['timezone'], $snapshot['hours'], $snapshot['holidays'], $snapshot['maintenance'] ?? []);
     }
     /** @param array<string, mixed> $issue
      * @param array<string, mixed> $patch */

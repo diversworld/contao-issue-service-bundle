@@ -40,14 +40,14 @@ final class SlaPremiumCallbacks
     public function loadMaintenance(mixed $value): array
     {
         $rows = json_decode((string) ($value ?: '[]'), true, 32, JSON_THROW_ON_ERROR);
-        return array_map(static fn (array $row): array => ['from' => gmdate('Y-m-d\TH:i:s\Z', $row[0]), 'to' => gmdate('Y-m-d\TH:i:s\Z', $row[1])], $rows);
+        return array_map(static fn (array $row): array => ['from' => gmdate('Y-m-d\TH:i:s\Z', $row[0]), 'to' => gmdate('Y-m-d\TH:i:s\Z', $row[1])], array_values($rows));
     }
 
     /** @return list<array{date: string}> */
     #[AsCallback(table: 'tl_issue_sla_calendar', target: 'fields.holidays.load')]
     public function loadHolidays(mixed $value): array
     {
-        return array_map(static fn (string $date): array => ['date' => $date], json_decode((string) ($value ?: '[]'), true, 32, JSON_THROW_ON_ERROR));
+        return array_map(static fn (string $date): array => ['date' => $date], array_values(json_decode((string) ($value ?: '[]'), true, 32, JSON_THROW_ON_ERROR)));
     }
 
     #[AsCallback(table: 'tl_issue_sla_calendar', target: 'fields.holidays.save')]

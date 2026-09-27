@@ -12,6 +12,7 @@ final class BusinessHoursCallbacks
 {
     public function __construct(private readonly BusinessCalendar $calendar) {}
 
+    /** @return list<array{day: string, from: string, to: string}> */
     #[AsCallback(table: 'tl_issue_sla_calendar', target: 'fields.business_hours.load')]
     #[AsCallback(table: 'tl_issue_sla', target: 'fields.business_hours.load')]
     public function load(mixed $value): array
@@ -34,7 +35,7 @@ final class BusinessHoursCallbacks
     {
         // DC_Table serializes compound widget values before invoking save callbacks.
         $rows = StringUtil::deserialize($value, true);
-        if (!$rows && $dc?->table === 'tl_issue_sla_calendar' && !empty($dc->activeRecord?->always_open)) return '{}';
+        if (!$rows && $dc?->table === 'tl_issue_sla_calendar' && !empty($dc->activeRecord->always_open)) return '{}';
         $hours = [];
         foreach ($rows as $row) {
             if (!is_array($row) || !in_array((string) ($row['day'] ?? ''), ['1','2','3','4','5','6','7'], true)

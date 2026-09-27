@@ -406,4 +406,21 @@ final class SlaIntegrationTest extends TestCase
         $callbacks->maintenance(serialize([['from'=>'2026-02-30T10:00:00Z','to'=>'2026-03-01T12:00:00Z']]));
     }
 
+    public function testLegacyPausedSnapshotUpgradePreservesBudgetAndCycle(): void
+    {
+        $this->sla->synchronize(1,$this->start);
+        $this->real->update('tl_issue',['status_id'=>2,'resolved_at'=>date('Y-m-d H:i:s',$this->start+1800)],['id'=>1]);
+        $this->sla->synchronize(1,$this->start+1800);
+        $before = $this->real->fetchAssociative('SELECT * FROM tl_issue WHERE id=1');
+        self::assertIsArray($before);
+        $snapshot = json_decode($before['sla_snapshot'],true);
+        unset($snapshot['identity'],$snapshot['sla_id']);
+        $this->real->update('tl_issue',['sla_snapshot'=>json_encode($snapshot,JSON_THROW_ON_ERROR)],['id'=>1]);
+        $this->sla->synchronize(1,$this->start+86400);
+        $after = $this->real->fetchAssociative('SELECT * FROM tl_issue WHERE id=1');
+        self::assertIsArray($after);
+        foreach (['response_due_at','resolve_due_at','sla_remaining_seconds','sla_cycle','sla_paused_at','sla_state'] as $field) self::assertSame($before[$field],$after[$field]);
+        self::assertArrayHasKey('identity',json_decode($after['sla_snapshot'],true));
+    }
+
 }

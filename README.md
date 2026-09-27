@@ -49,3 +49,7 @@ Thank You!
 Die SLA-Erweiterung ergänzt Geschäftszeiten/Feiertage, Reaktions- und Lösungsfristen,
 Reopen, Eskalationen, Berichte sowie signierte Online-/Offline-Lizenzen.
 Einrichtung, Lizenzprotokoll, Commands und Betriebsregeln: [SLA und Lizenzen](docs/SLA_LICENSE.md).
+
+## SLA-Premium-Funktionen
+
+[Kundenverträge, Kalender, Eskalationen und Monatsberichte mit PDF/Excel/CSV](docs/SLA_PREMIUM.md).

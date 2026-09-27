@@ -73,10 +73,10 @@ final class SlaCalculationService
             }
             if (!$terminal && $current['sla_state'] === 'paused') {
                 $patch['resolve_due_at'] = $this->add($now, max(0, (int) $current['sla_remaining_seconds']), $snapshot);
-                if ((int) $current['sla_remaining_seconds'] < 0) $patch['resolve_due_at'] = $now - 1;
+                if ((int) $current['sla_remaining_seconds'] < 0) $patch['resolve_due_at'] = $this->calendar->subtract($now, -(int) $current['sla_remaining_seconds'], $snapshot['timezone'], $snapshot['hours'], $snapshot['holidays'], $snapshot['maintenance'] ?? []);
                 if (!$current['first_response_at']) {
                     $remaining = $this->between((int) $current['sla_paused_at'], (int) $current['response_due_at'], $snapshot);
-                    $patch['response_due_at'] = (int) $current['sla_paused_at'] > (int) $current['response_due_at'] ? $now - 1 : $this->add($now, max(0, $remaining), $snapshot);
+                    $patch['response_due_at'] = (int) $current['sla_paused_at'] > (int) $current['response_due_at'] ? $this->calendar->subtract($now, max(1, -$remaining), $snapshot['timezone'], $snapshot['hours'], $snapshot['holidays'], $snapshot['maintenance'] ?? []) : $this->add($now, max(0, $remaining), $snapshot);
                 }
                 $patch['sla_state'] = 'active';
                 $patch['sla_paused_at'] = null;

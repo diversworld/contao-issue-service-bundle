@@ -64,6 +64,28 @@ final class BusinessCalendar
         throw new \DomainException('SLA-Frist überschreitet den Berechnungshorizont von zehn Jahren.');
     }
 
+    /** Move an overdue budget backwards through support time when a ticket reopens.
+     * @param array<int, list<array{string, string}>> $hours
+     * @param list<string> $holidays
+     * @param list<array{int, int}> $maintenance */
+    public function subtract(int $start, int $seconds, string $timezone, array $hours, array $holidays, array $maintenance = []): int
+    {
+        $this->validate($timezone, $hours, $holidays);
+        $this->validateMaintenance($maintenance);
+        if ($seconds < 0) throw new \InvalidArgumentException('Negative SLA-Dauer.');
+        if ($seconds === 0) return $start;
+        $day = (new \DateTimeImmutable('@'.$start))->setTimezone(new \DateTimeZone($timezone))->setTime(0, 0);
+        for ($i = 0; $i < 3660; ++$i, $day = $day->modify('-1 day')) {
+            foreach (array_reverse($this->windows($day, $hours, $holidays, $maintenance)) as [$from, $to]) {
+                $to = min($to, $start);
+                if ($to <= $from) continue;
+                if ($seconds <= $to - $from) return $to - $seconds;
+                $seconds -= $to - $from;
+            }
+        }
+        throw new \DomainException('SLA-Zeitraum überschreitet zehn Jahre.');
+    }
+
     /** @param array<int, list<array{string, string}>> $hours
      * @param list<string> $holidays
      * @param list<array{int, int}> $maintenance */

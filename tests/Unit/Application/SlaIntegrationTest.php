@@ -423,4 +423,17 @@ final class SlaIntegrationTest extends TestCase
         self::assertArrayHasKey('identity',json_decode($after['sla_snapshot'],true));
     }
 
+    public function testOverdueReopeningKeepsActualConsumedSupportTime(): void
+    {
+        $this->sla->synchronize(1,$this->start);
+        $this->real->update('tl_issue',['status_id'=>2,'resolved_at'=>date('Y-m-d H:i:s',$this->start+36000)],['id'=>1]);
+        $this->sla->synchronize(1,$this->start+36000);
+        $this->real->update('tl_issue',['status_id'=>1,'resolved_at'=>null],['id'=>1]);
+        $this->sla->synchronize(1,$this->start+86400);
+        $this->real->update('tl_issue',['status_id'=>2,'resolved_at'=>date('Y-m-d H:i:s',$this->start+90000)],['id'=>1]);
+        $this->sla->synchronize(1,$this->start+90000);
+        $report = (new SlaReportingService($this->db,$this->premium))->report();
+        self::assertSame(39600.0,$report['metrics']['average_resolve_seconds']);
+    }
+
 }

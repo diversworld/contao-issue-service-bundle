@@ -25,6 +25,7 @@
                     <dd>{{ issue.description|striptags|nl2br }}</dd>
                 </dl>
             {% endblock %}
+            {% include '@ContaoIssueService/issue/sla.html.twig' %}
             {% block attachment %}
                 <section class="issue-service__section">
                     <h4>Anhänge</h4>

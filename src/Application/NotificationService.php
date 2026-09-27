@@ -19,6 +19,7 @@ final class NotificationService
         private readonly MailerInterface $mailer,
         private readonly string $fromAddress,
         private readonly ?LockFactory $lockFactory = null,
+        private readonly ?\Diversworld\ContaoIssueServiceBundle\Application\License\PremiumFeatureResolver $premium = null,
     ) {}
 
     public function hasQueuedNotifications(): bool { return $this->queued; }
@@ -26,6 +27,11 @@ final class NotificationService
     /** Re-evaluated before delivery so opting out also affects queued messages. */
     private function recipients(int $issueId, string $template): array
     {
+        if (str_starts_with($template, 'sla_escalation_')) {
+            if (!$this->premium?->enabled()) return [];
+            $rule = $this->db->fetchAssociative('SELECT e.recipients FROM tl_issue_sla_escalation e JOIN tl_issue i ON i.sla_id=e.sla_id WHERE e.id=? AND i.id=? AND e.published=1 AND i.deleted_at IS NULL', [(int) substr($template, 15), $issueId]);
+            return $rule ? \Diversworld\ContaoIssueServiceBundle\Application\Sla\SlaEscalationService::recipients((string) $rule['recipients']) : [];
+        }
         if (!in_array($template, ['issue_created', 'assignment_changed', 'status_changed', 'public_comment_added'], true)) return [];
         $field = 'issue_notify_'.$template;
         $issue = $this->db->fetchAssociative('SELECT i.*,s.notification_recipients FROM tl_issue i JOIN tl_issue_service s ON s.id=i.service_id WHERE i.id=:id', ['id' => $issueId]);
@@ -56,7 +62,13 @@ final class NotificationService
 
     public function enqueue(int $issueId, string $template): void
     {
-        $recipients = $this->recipients($issueId, $template);
+        $this->enqueueRecipients($issueId, $template, $this->recipients($issueId, $template));
+    }
+
+    /** @param list<string> $recipients */
+    public function enqueueRecipients(int $issueId, string $template, array $recipients): void
+    {
+        if (str_starts_with($template, 'sla_escalation_')) $this->premium?->requireSla();
         $event = Uuid::v7()->toBinary();
         foreach ($recipients as $recipient) {
             if (!filter_var($recipient, FILTER_VALIDATE_EMAIL)) continue;
@@ -90,7 +102,7 @@ final class NotificationService
                         'assignment_changed' => 'Die Bearbeiterzuweisung des Tickets wurde geändert.',
                         'status_changed' => 'Der Status des Tickets wurde geändert.',
                         'public_comment_added' => 'Eine neue öffentliche Antwort wurde hinzugefügt.',
-                        default => 'Es liegt eine neue Aktivität vor.',
+                        default => str_starts_with($row['template_key'], 'sla_escalation_') ? 'SLA-Eskalation: Eine vereinbarte Reaktions- oder Lösungsfrist wurde überschritten.' : 'Es liegt eine neue Aktivität vor.',
                     };
                     $from = $this->fromAddress ?: (string) \Contao\Config::get('adminEmail');
                     $this->mailer->send((new Email())->from($from)->to($row['recipient'])

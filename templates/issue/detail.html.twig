@@ -10,6 +10,8 @@
         <dd>{{ issue.description|striptags|nl2br }}</dd>
     </dl>
 
+{% include '@ContaoIssueService/issue/sla.html.twig' %}
+
 <section class="issue-service__section">
     <h4>Anhänge</h4>
     <ul>

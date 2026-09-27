@@ -5,6 +5,8 @@
   "license": "proprietary",
   "require": {
     "php": ">=8.2",
+    "ext-sodium": "*",
+    "symfony/http-client": "^6.4 || ^7.0",
     "contao/core-bundle": "^5.7 || ^6.0",
     "doctrine/dbal": "^3.8 || ^4.0",
     "symfony/form": "^6.4 || ^7.0",

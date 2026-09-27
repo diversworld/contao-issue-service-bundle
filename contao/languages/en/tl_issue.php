@@ -40,3 +40,5 @@ $GLOBALS['TL_LANG']['tl_issue']['priority_options'] = [
     'high' => 'High',
     'critical' => 'Critical',
 ];
+$GLOBALS['TL_LANG']['tl_issue']['sla_legend'] = 'Service Level Agreement';
+$GLOBALS['TL_LANG']['tl_issue']['sla_override_id'] = ['Abweichende SLA-Definition (leer: Service-Vorgabe)', ''];

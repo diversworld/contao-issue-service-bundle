@@ -11,7 +11,7 @@ use Diversworld\ContaoIssueServiceBundle\Repository\ServiceRepository;
 
 final class IssueApplicationService 
 { 
-    public function __construct(private readonly IssueRepository $issues,private readonly ServiceRepository $services,private readonly TicketNumberGenerator $numbers,private readonly NotificationService $notifications)
+    public function __construct(private readonly IssueRepository $issues,private readonly ServiceRepository $services,private readonly TicketNumberGenerator $numbers,private readonly NotificationService $notifications, private readonly ?\Diversworld\ContaoIssueServiceBundle\Application\Sla\SlaCalculationService $sla = null)
     {} 
     
     /** @return array{id: int, uuid: string, ticketNumber: string} */ 
@@ -76,6 +76,7 @@ final class IssueApplicationService
                     ]
                 );
                 
+                $this->sla?->synchronize($id);
                 $this->notifications->enqueue($id,'issue_created');
                 
                 return ['id'=>$id,'uuid'=>$uuid->toRfc4122(),'ticketNumber'=>$ticket];

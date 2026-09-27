@@ -9,7 +9,7 @@ use Diversworld\ContaoIssueServiceBundle\Repository\IssueRepository;
 
 final class CommentService 
 { 
-    public function __construct(private readonly CommentRepository $comments,private readonly IssueRepository $issues,private readonly NotificationService $notifications)
+    public function __construct(private readonly CommentRepository $comments,private readonly IssueRepository $issues,private readonly NotificationService $notifications, private readonly ?\Diversworld\ContaoIssueServiceBundle\Application\Sla\SlaCalculationService $sla = null)
     {} 
     
     public function addPublic(int $issueId,string $authorType,?int $authorId,string $body):int
@@ -72,6 +72,7 @@ final class CommentService
                         $this->notifications->enqueue($issueId,'public_comment_added');
                     }
                     
+                    $this->sla?->synchronize($issueId, null, $authorType === 'user' ? (int) $authorId : 0);
                     return $id;
                 }
             );

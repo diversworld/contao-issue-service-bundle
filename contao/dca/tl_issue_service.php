@@ -88,3 +88,6 @@ $GLOBALS['TL_DCA']['tl_issue_service'] = [
 		],
 	],
 ];
+
+$GLOBALS['TL_DCA']['tl_issue_service']['fields']['sla_id'] = ['sql' => 'int unsigned NOT NULL default 0', 'inputType' => 'select', 'foreignKey' => 'tl_issue_sla.title', 'eval' => ['includeBlankOption' => true, 'chosen' => true]];
+$GLOBALS['TL_DCA']['tl_issue_service']['palettes']['default'] .= ';{sla_legend},sla_id';

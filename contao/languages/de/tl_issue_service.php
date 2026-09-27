@@ -18,3 +18,5 @@ $GLOBALS['TL_LANG']['tl_issue_service']['notification_recipients'] = ['Benachric
 $GLOBALS['TL_LANG']['tl_issue_service']['published'] = ['Veroeffentlicht', 'Den Service fuer neue Issues verfuegbar machen.'];
 
 $GLOBALS['TL_LANG']['tl_issue_service']['default_priority_options'] = $GLOBALS['TL_LANG']['tl_issue']['priority_options'] ?? [];
+$GLOBALS['TL_LANG']['tl_issue_service']['sla_legend'] = 'Service Level Agreement';
+$GLOBALS['TL_LANG']['tl_issue_service']['sla_id'] = ['SLA-Definition', ''];

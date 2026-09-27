@@ -1,0 +1,18 @@
+{% if sla|default(null) %}
+<section class="issue-service__section" aria-label="Service Level Agreement">
+    <h4>Service Level Agreement</h4>
+    <p>{{ sla.state == 'paused' ? 'Abgeschlossen – bei Wiederaufnahme wird die Restzeit fortgesetzt' : 'Aktiv' }}{% if sla.breached %} · SLA verletzt{% endif %}</p>
+    <dl>
+        <dt>Reaktion</dt>
+        <dd>{% if sla.responded %}Antwort erfolgt{% else %}{{ sla.response_overdue ? 'Überfällig um' : 'Restzeit' }} {{ (sla.response_remaining|abs / 60)|round(0, 'ceil') }} Geschäftsminuten · Frist: {{ sla.response_due_at|date('d.m.Y H:i T') }}{% endif %}</dd>
+        <dt>Lösung</dt>
+        <dd>{{ sla.resolve_overdue ? 'Überfällig um' : 'Restzeit' }} {{ (sla.resolve_remaining|abs / 60)|round(0, 'ceil') }} Geschäftsminuten · Frist: {{ sla.resolve_due_at|date('d.m.Y H:i T') }}</dd>
+    </dl>
+    <details><summary>SLA-Verlauf</summary><ul>
+    {% for entry in sla.history %}
+        {% set labels = {'assigned': 'SLA zugeordnet', 'unassigned': 'SLA-Zuordnung aufgehoben', 'calculated': 'SLA aktualisiert', 'responded': 'Erste Antwort', 'paused': 'Bearbeitung abgeschlossen', 'reopened': 'Bearbeitung wiederaufgenommen', 'response_breached': 'Reaktionsfrist verletzt', 'resolve_breached': 'Lösungsfrist verletzt'} %}
+        <li>{{ entry.created_at|date('d.m.Y H:i T') }} · {{ labels[entry.event_type]|default('SLA-Eskalation') }}</li>
+    {% endfor %}
+    </ul></details>
+</section>
+{% endif %}

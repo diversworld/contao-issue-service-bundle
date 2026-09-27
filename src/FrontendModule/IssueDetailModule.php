@@ -35,6 +35,7 @@ final class IssueDetailModule extends AbstractFrontendModuleController
         private readonly ContaoCsrfTokenManager $csrfTokenManager,
         #[Autowire(param: 'contao.csrf_token_name')]
         private readonly string $csrfTokenName,
+        private readonly \Diversworld\ContaoIssueServiceBundle\Application\Sla\SlaCalculationService $sla,
     ) {
     }
 
@@ -67,6 +68,7 @@ final class IssueDetailModule extends AbstractFrontendModuleController
         }
 
         $template->set('issue', $issue);
+        $template->set('sla', $this->sla->view((int) $issue['id']));
         $template->set('attachments', $this->issues->attachments((int) $issue['id']));
         $template->set('timeline', $this->issues->publicTimeline((int) $issue['id']));
         $template->set('commentForm', $this->formFactory->create(CommentType::class, null, $this->getContaoCsrfFormOptions() + ['profile_id' => (int) ($issue['profile_id'] ?? 0), 'status_choices' => $this->workflow->choices($issue)])->createView());

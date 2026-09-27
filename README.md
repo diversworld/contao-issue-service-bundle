@@ -43,3 +43,9 @@ If you like this extension and think it's worth a little donation: You can suppo
 [Donation for Diversworld DiveClubManager](https://paypal.me/EckhardBecker615)
 
 Thank You!
+
+### SLA und Lizenzverwaltung
+
+Die SLA-Erweiterung ergänzt Geschäftszeiten/Feiertage, Reaktions- und Lösungsfristen,
+Reopen, Eskalationen, Berichte sowie signierte Online-/Offline-Lizenzen.
+Einrichtung, Lizenzprotokoll, Commands und Betriebsregeln: [SLA und Lizenzen](docs/SLA_LICENSE.md).

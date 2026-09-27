@@ -8,3 +8,7 @@ $GLOBALS['TL_LANG']['MOD']['issue_service_categories'] = ['Categories', 'Manage 
 $GLOBALS['TL_LANG']['MOD']['issue_service_workflow'] = ['Workflow', 'Manage statuses and transitions.'];
 $GLOBALS['TL_LANG']['MOD']['issue_service_settings'] = ['Settings', 'Manage issue service settings.'];
 $GLOBALS['TL_LANG']['MOD']['issue_service_settings'] = ['Configuration profiles', 'Manage complete configurations for different tasks or clients.'];
+
+$GLOBALS['TL_LANG']['MOD']['issue_service_sla_dashboard'] = ['SLA-Dashboard / Berichte', ''];
+$GLOBALS['TL_LANG']['MOD']['issue_service_sla'] = ['SLA-Definitionen', ''];
+$GLOBALS['TL_LANG']['MOD']['issue_service_license'] = ['Lizenzverwaltung', ''];

@@ -1,8 +1,12 @@
 parameters:
+  contao_issue_service.license_public_key: ''
+  contao_issue_service.license_tenant: ''
+  contao_issue_service.license_domain: ''
+  contao_issue_service.license_endpoint: ''
   contao_issue_service.storage_dir: '%kernel.project_dir%/var/issue-attachments'
   # Empty: use the Contao administrator email; may be overridden per installation.
   contao_issue_service.mail_from: ''
-
+  
 services:
   _defaults:
     autowire: true
@@ -16,6 +20,7 @@ services:
       - '../src/DependencyInjection/'
       - '../src/Domain/Dto/'
       - '../src/Domain/Enum/'
+      - '../src/Backend/SlaDashboardModule.php'
 
   Diversworld\ContaoIssueServiceBundle\Infrastructure\LocalAttachmentStorage:
     arguments:
@@ -43,3 +48,32 @@ services:
 
   Diversworld\ContaoIssueServiceBundle\EventListener\DataContainer\AttachmentDirectoryCallback:
     public: true
+
+  Diversworld\ContaoIssueServiceBundle\Application\License\LicenseValidationService:
+    arguments:
+      $publicKey: '%contao_issue_service.license_public_key%'
+      $tenant: '%contao_issue_service.license_tenant%'
+      $domain: '%contao_issue_service.license_domain%'
+
+  Diversworld\ContaoIssueServiceBundle\Application\Sla\SlaHistory:
+    arguments:
+      $auditKey: '%kernel.secret%'
+
+  Diversworld\ContaoIssueServiceBundle\EventListener\DataContainer\SlaCallbacks:
+    public: true
+
+  Diversworld\ContaoIssueServiceBundle\Application\Sla\SlaReportingService:
+    public: true
+
+  Diversworld\ContaoIssueServiceBundle\Application\License\LicenseService:
+    public: true
+    arguments:
+      $endpoint: '%contao_issue_service.license_endpoint%'
+      $tenant: '%contao_issue_service.license_tenant%'
+      $domain: '%contao_issue_service.license_domain%'
+
+  # Normalize engine-less third-party tables after all schema listeners have run.
+  Diversworld\ContaoIssueServiceBundle\Infrastructure\ContaoSchemaProvider:
+    decorates: contao.doctrine.schema_provider
+    arguments:
+      $inner: '@Diversworld\ContaoIssueServiceBundle\Infrastructure\ContaoSchemaProvider.inner'

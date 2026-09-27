@@ -17,6 +17,7 @@ final class IssueWorkflowService
         private readonly WorkflowRoles $roles,
         private readonly SettingsService $settings,
         private readonly TokenStorageInterface $tokens,
+        private readonly ?\Diversworld\ContaoIssueServiceBundle\Application\Sla\SlaCalculationService $sla = null,
     ) {}
 
     public function roles(array $issue): array
@@ -84,6 +85,7 @@ final class IssueWorkflowService
             }
             $db->insert('tl_issue_history', ['issue_id' => $issueId, 'event_type' => 'status_changed', 'actor_type' => $actor, 'actor_id' => (int) $user->id,
                 'old_value' => json_encode(['status_id' => (int) $issue['status_id']], JSON_THROW_ON_ERROR), 'new_value' => json_encode(['status_id' => $target], JSON_THROW_ON_ERROR), 'created_at' => $now]);
+            $this->sla?->synchronize($issueId, null, $actor === 'user' ? (int) $user->id : 0);
             $this->notifications->enqueue($issueId, 'status_changed');
             return $commentId;
         });

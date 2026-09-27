@@ -17,7 +17,7 @@ use Diversworld\ContaoIssueServiceBundle\Security\IssueVoter;
 #[Route('/service/issues/{uuid}',name:'issue_service_detail',defaults:['_scope'=>'frontend'],requirements:['uuid'=>'[0-9a-fA-F-]{36}'],methods:['GET'])] 
 final class IssueDetailController extends AbstractController 
 { 
-    public function __invoke(string $uuid,IssueRepository $repo,\Contao\CoreBundle\Csrf\ContaoCsrfTokenManager $csrfTokenManager,\Diversworld\ContaoIssueServiceBundle\Application\IssueWorkflowService $workflow,IssueDetailUrlGenerator $detailUrlGenerator):Response
+    public function __invoke(string $uuid,IssueRepository $repo,\Contao\CoreBundle\Csrf\ContaoCsrfTokenManager $csrfTokenManager,\Diversworld\ContaoIssueServiceBundle\Application\IssueWorkflowService $workflow,IssueDetailUrlGenerator $detailUrlGenerator, \Diversworld\ContaoIssueServiceBundle\Application\Sla\SlaCalculationService $sla):Response
     {
         $u=$this->getUser();
         $member=$u instanceof FrontendUser?(int)$u->id:null;
@@ -38,6 +38,7 @@ final class IssueDetailController extends AbstractController
             '@ContaoIssueService/issue/detail.html.twig',
             [
                 'issue'=>$issue,
+                'sla' => $sla->view((int) $issue['id']),
                 'attachments' => $repo->attachments((int) $issue['id']),
                 'timeline'=>$repo->publicTimeline((int)$issue['id']),
                 'commentForm'=>$this->createForm(CommentType::class, null, ['status_choices' => $workflow->choices($issue), 'profile_id' => (int) ($issue['profile_id'] ?? 0), 'csrf_field_name' => 'REQUEST_TOKEN', 'csrf_token_manager' => $csrfTokenManager, 'csrf_token_id' => $this->getParameter('contao.csrf_token_name')])->createView()

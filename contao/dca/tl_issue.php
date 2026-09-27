@@ -178,3 +178,21 @@ $GLOBALS['TL_DCA']['tl_issue'] = [
             ],
     ],
 ];
+$GLOBALS['TL_DCA']['tl_issue']['fields']['sla_id'] = ['sql' => 'int unsigned NOT NULL default 0'];
+$GLOBALS['TL_DCA']['tl_issue']['fields']['sla_override_id'] = ['sql' => 'int unsigned NOT NULL default 0', 'inputType' => 'select', 'foreignKey' => 'tl_issue_sla.title', 'eval' => ['includeBlankOption' => true, 'chosen' => true]];
+$GLOBALS['TL_DCA']['tl_issue']['fields']['sla_state'] = ['sql' => 'varchar(16) NOT NULL default \'none\''];
+$GLOBALS['TL_DCA']['tl_issue']['fields']['sla_snapshot'] = ['sql' => 'text NULL'];
+$GLOBALS['TL_DCA']['tl_issue']['fields']['sla_cycle'] = ['sql' => 'int NOT NULL default 0'];
+$GLOBALS['TL_DCA']['tl_issue']['fields']['sla_remaining_seconds'] = ['sql' => 'int NOT NULL default 0'];
+$GLOBALS['TL_DCA']['tl_issue']['fields']['response_due_at'] = ['sql' => 'bigint NULL'];
+$GLOBALS['TL_DCA']['tl_issue']['fields']['resolve_due_at'] = ['sql' => 'bigint NULL'];
+$GLOBALS['TL_DCA']['tl_issue']['fields']['first_response_at'] = ['sql' => 'bigint NULL'];
+$GLOBALS['TL_DCA']['tl_issue']['fields']['sla_breached_at'] = ['sql' => 'bigint NULL'];
+$GLOBALS['TL_DCA']['tl_issue']['fields']['sla_paused_at'] = ['sql' => 'bigint NULL'];
+$GLOBALS['TL_DCA']['tl_issue']['fields']['sla_breached'] = ['sql' => 'tinyint(1) NOT NULL default 0'];
+$GLOBALS['TL_DCA']['tl_issue']['fields']['sla_response_breached'] = ['sql' => 'tinyint(1) NOT NULL default 0'];
+$GLOBALS['TL_DCA']['tl_issue']['fields']['sla_resolve_breached'] = ['sql' => 'tinyint(1) NOT NULL default 0'];
+$GLOBALS['TL_DCA']['tl_issue']['config']['sql']['keys']['sla_state,resolve_due_at'] = 'index';
+$GLOBALS['TL_DCA']['tl_issue']['config']['sql']['keys']['sla_state,response_due_at'] = 'index';
+$GLOBALS['TL_DCA']['tl_issue']['palettes']['default'] .= ';{sla_legend},sla_override_id,sla_display';
+$GLOBALS['TL_DCA']['tl_issue']['fields']['sla_display'] = ['input_field_callback' => [\Diversworld\ContaoIssueServiceBundle\EventListener\DataContainer\SlaCallbacks::class, 'display']];

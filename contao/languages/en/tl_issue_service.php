@@ -18,3 +18,5 @@ $GLOBALS['TL_LANG']['tl_issue_service']['notification_recipients'] = ['Notificat
 $GLOBALS['TL_LANG']['tl_issue_service']['published'] = ['Published', 'Make the service available for new issues.'];
 
 $GLOBALS['TL_LANG']['tl_issue_service']['default_priority_options'] = $GLOBALS['TL_LANG']['tl_issue']['priority_options'] ?? [];
+$GLOBALS['TL_LANG']['tl_issue_service']['sla_legend'] = 'Service Level Agreement';
+$GLOBALS['TL_LANG']['tl_issue_service']['sla_id'] = ['SLA-Definition', ''];
